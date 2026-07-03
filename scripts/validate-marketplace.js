@@ -55,6 +55,10 @@ const REQUIRED = [
   "plugins/bridgistic/package/TROUBLESHOOTING.md",
   "mcp-server/package.json",
   "mcp-server/.env.example",
+  "mcp-server/README.md",
+  "mcpb/manifest.json",
+  "mcpb/icon.png",
+  "server.json",
   "wordpress-plugin/bridgistic/bridgistic.php",
   "docs/INSTALL.md",
   "docs/CLAUDE_DESKTOP.md",
@@ -143,6 +147,63 @@ for (const example of [
   "plugins/bridgistic/package/connections.example.json",
 ]) {
   if (existsSync(join(ROOT, example)) && readJson(example)) ok(`${example} parses`);
+}
+
+// Desktop extension manifest (deep validation happens via `mcpb validate`
+// inside npm run desktop:package; here we check shape + user_config wiring).
+const mcpbManifest = readJson("mcpb/manifest.json");
+if (mcpbManifest) {
+  if (mcpbManifest.name !== "bridgistic") fail(`mcpb/manifest.json: name is "${mcpbManifest.name}"`);
+  if (mcpbManifest.server?.entry_point !== "server/index.js") {
+    fail("mcpb/manifest.json: server.entry_point must be server/index.js (staged by desktop:package)");
+  }
+  const needConfig = ["site_url", "key_id", "key_secret"];
+  const missing = needConfig.filter((k) => !mcpbManifest.user_config?.[k]);
+  if (missing.length) fail(`mcpb/manifest.json: user_config missing ${missing.join(", ")}`);
+  if (mcpbManifest.user_config?.key_secret?.sensitive !== true) {
+    fail("mcpb/manifest.json: user_config.key_secret must be sensitive: true");
+  }
+  if (!missing.length) ok("mcpb/manifest.json valid (one-click user_config wired)");
+}
+
+// MCP Registry listing.
+const registry = readJson("server.json");
+if (registry) {
+  const before = failures;
+  if (!/^[a-zA-Z0-9.-]+\/[a-zA-Z0-9._-]+$/.test(registry.name ?? "")) {
+    fail(`server.json: name "${registry.name}" is not namespace/name format`);
+  }
+  const npmPkg = registry.packages?.find((p) => p.registryType === "npm");
+  if (!npmPkg) {
+    fail("server.json: no npm package entry");
+  } else {
+    const serverPkg = readJson("mcp-server/package.json");
+    if (serverPkg && npmPkg.identifier !== serverPkg.name) {
+      fail(`server.json npm identifier "${npmPkg.identifier}" != mcp-server package name "${serverPkg.name}"`);
+    }
+    const readme = readFileSync(join(ROOT, "mcp-server/README.md"), "utf8");
+    if (!readme.includes(`mcp-name: ${registry.name}`)) {
+      fail(`mcp-server/README.md must contain "mcp-name: ${registry.name}" for registry ownership validation`);
+    }
+  }
+  if (failures === before) ok(`server.json valid (${registry.name})`);
+}
+
+// Version consistency — the release workflow enforces this against the tag.
+console.log("\nVersion consistency");
+const versions = {
+  "package.json": readJson("package.json")?.version,
+  "mcp-server/package.json": readJson("mcp-server/package.json")?.version,
+  "plugins/bridgistic/.claude-plugin/plugin.json": plugin?.version,
+  "marketplace.json (bridgistic entry)": marketplace?.plugins?.find((p) => p.name === "bridgistic")?.version,
+  "mcpb/manifest.json": mcpbManifest?.version,
+  "server.json": registry?.version,
+};
+const unique = [...new Set(Object.values(versions).filter(Boolean))];
+if (unique.length === 1) {
+  ok(`all manifests at ${unique[0]}`);
+} else {
+  fail(`version drift: ${Object.entries(versions).map(([k, v]) => `${k}=${v}`).join(", ")}`);
 }
 
 // ---- 3. Secret scan ----------------------------------------------------------------

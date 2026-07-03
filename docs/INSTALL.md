@@ -30,7 +30,11 @@ Full plugin guide: [WORDPRESS_SETUP.md](WORDPRESS_SETUP.md)
 
 ## Step 3 — Get the MCP server
 
-**Option A — Claude Code marketplace (no build needed):**
+**Option A — Claude Desktop one-click extension (no build, no terminal):**
+
+Download [`bridgistic.mcpb`](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb), double-click it, paste the three values from Step 2 when Claude Desktop prompts, and skip straight to Step 5.
+
+**Option B — Claude Code marketplace (no build needed):**
 
 ```
 /plugin marketplace add Shubochandrosarker/bridgistic-claude-marketplace
@@ -39,7 +43,7 @@ Full plugin guide: [WORDPRESS_SETUP.md](WORDPRESS_SETUP.md)
 
 The plugin ships a pre-built server; you only set environment variables.
 
-**Option B — clone and build (Claude Desktop / manual):**
+**Option C — clone and build (manual config):**
 
 ```bash
 git clone https://github.com/Shubochandrosarker/bridgistic-claude-marketplace.git

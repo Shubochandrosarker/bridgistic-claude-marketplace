@@ -1,12 +1,31 @@
 # Claude Desktop setup
 
-Connect Claude Desktop to your WordPress site through the local Bridgistic MCP server.
+Connect Claude Desktop to your WordPress site through the local Bridgistic MCP server. Two paths: the **one-click desktop extension** (recommended) or a manual config.
 
-## Prerequisites
+## Path 1 — One-click desktop extension (recommended)
+
+No terminal, no config files, no Node.js install (Claude Desktop ships its own runtime).
+
+1. Create a key in **WP Admin → Bridgistic → Claude Setup** (the secret is shown once).
+2. Download **`bridgistic.mcpb`** from the [latest release](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb) — or click the download button in the Claude Setup wizard's Desktop Extension tab.
+3. Double-click the file (or drag it into **Claude Desktop → Settings → Extensions**).
+4. Claude Desktop prompts for three values — paste them from the wizard:
+   - **WordPress Site URL** (e.g. `https://example.com`)
+   - **Bridgistic Key ID** (`wpk_…`)
+   - **Bridgistic Key Secret** (`wps_…`) — stored securely by Claude Desktop, never written to a config file
+5. Enable the extension. Done — ask Claude to *run bridgistic_get_site_info* to verify.
+
+To update later, download the new `.mcpb` and open it — Claude Desktop replaces the old version and keeps your settings.
+
+## Path 2 — Manual config
+
+Use this if you prefer explicit configs or want to run the server from source.
+
+### Prerequisites
 
 - Node.js 20+ (`node --version`)
 - The Bridgistic WordPress plugin installed and a key created (**Bridgistic → Claude Setup**)
-- This repo cloned and built: `npm install && npm run build`
+- This repo cloned and built: `npm install && npm run build` — or skip cloning entirely and use `npx bridgistic-mcp-server` once it's on npm
 
 ## 1. Locate your Claude Desktop config
 

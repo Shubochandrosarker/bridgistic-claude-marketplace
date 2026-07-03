@@ -3,7 +3,7 @@
  * Plugin Name:       Bridgistic
  * Plugin URI:        https://github.com/Shubochandrosarker/bridgistic
  * Description:        Give Claude and Claude Cowork production-safe, scoped control of this WordPress site — HMAC-signed requests, least-privilege keys, dry-run and human approval on destructive ops, one-call rollback, full audit, usage metering, and scheduled playbooks.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Shuvo Sarker (WordPressistic)
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // No direct access.
 }
 
-define( 'BRIDGISTIC_VERSION', '1.0.0' );
+define( 'BRIDGISTIC_VERSION', '1.1.0' );
 define( 'BRIDGISTIC_FILE', __FILE__ );
 define( 'BRIDGISTIC_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BRIDGISTIC_URL', plugin_dir_url( __FILE__ ) );

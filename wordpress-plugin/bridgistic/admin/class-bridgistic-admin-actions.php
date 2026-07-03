@@ -314,9 +314,10 @@ final class Actions {
 	private function config_payload( string $key_id, ?string $secret ): array {
 		return array(
 			'configs' => array(
-				'desktop' => ConfigGenerator::to_json( ConfigGenerator::desktop( $key_id, $secret ) ),
-				'code'    => ConfigGenerator::to_json( ConfigGenerator::code( $key_id, $secret ) ),
-				'cli'     => ConfigGenerator::code_cli( $key_id, $secret ),
+				'desktop'   => ConfigGenerator::to_json( ConfigGenerator::desktop( $key_id, $secret ) ),
+				'code'      => ConfigGenerator::to_json( ConfigGenerator::code( $key_id, $secret ) ),
+				'cli'       => ConfigGenerator::code_cli( $key_id, $secret ),
+				'extension' => ConfigGenerator::extension_values( $key_id, $secret ),
 			),
 		);
 	}

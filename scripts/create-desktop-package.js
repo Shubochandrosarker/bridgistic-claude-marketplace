@@ -1,26 +1,26 @@
 #!/usr/bin/env node
 /**
- * Builds dist/bridgistic-desktop-package.zip — a Claude Desktop-oriented
- * package laid out to be migrated to the .mcpb desktop-extension format
- * later. It is a plain zip on purpose: we do not fake .mcpb compatibility
- * until the manifest is finalized and validated against the official spec
- * (tracked in docs/ROADMAP.md).
+ * Builds dist/bridgistic.mcpb — the Claude Desktop extension (MCP Bundle).
  *
- * Layout:
- *   manifest-draft.json   — draft metadata (NOT a valid mcpb manifest yet)
- *   server/index.js       — self-contained MCP server bundle
- *   claude_desktop_config.example.json
- *   install scripts + TROUBLESHOOTING.md
+ * One-click connection: users double-click the .mcpb, Claude Desktop shows
+ * the three user_config fields from mcpb/manifest.json (site URL, key id,
+ * key secret — the secret is stored in the OS keychain), and the bundled
+ * self-contained server runs locally. No terminal, no config files.
+ *
+ * Pipeline: stage manifest + icon + pre-built server bundle → validate the
+ * manifest against the official schema → `mcpb pack` → verify the output.
+ * Requires the server bundle (run `npm run build` first).
  */
 
-import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { cpSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ZipWriter } from "./lib/zip.js";
 
 const ROOT = join(fileURLToPath(import.meta.url), "..", "..");
 const DIST = join(ROOT, "dist");
-mkdirSync(DIST, { recursive: true });
+const STAGE = join(DIST, "mcpb-staging");
+const OUT = join(DIST, "bridgistic.mcpb");
 
 const bundle = join(ROOT, "plugins/bridgistic/server/index.js");
 if (!existsSync(bundle)) {
@@ -28,49 +28,40 @@ if (!existsSync(bundle)) {
   process.exit(1);
 }
 
-const pluginMeta = JSON.parse(
-  readFileSync(join(ROOT, "plugins/bridgistic/.claude-plugin/plugin.json"), "utf8")
+const mcpb = (args, opts = {}) =>
+  execFileSync("npx", ["--yes", "@anthropic-ai/mcpb@latest", ...args], {
+    stdio: "inherit",
+    cwd: ROOT,
+    ...opts,
+  });
+
+// ---- stage ------------------------------------------------------------------
+
+rmSync(STAGE, { recursive: true, force: true });
+mkdirSync(join(STAGE, "server"), { recursive: true });
+
+cpSync(join(ROOT, "mcpb/manifest.json"), join(STAGE, "manifest.json"));
+cpSync(join(ROOT, "mcpb/icon.png"), join(STAGE, "icon.png"));
+cpSync(bundle, join(STAGE, "server/index.js"));
+// The bundle is CommonJS; pin the module type so Node never guesses wrong.
+writeFileSync(
+  join(STAGE, "server/package.json"),
+  JSON.stringify({ name: "bridgistic-mcp-server-bundle", private: true, type: "commonjs" }, null, 2) + "\n"
 );
 
-const zip = new ZipWriter();
+// ---- validate + pack -----------------------------------------------------------
 
-zip.addString(
-  "manifest-draft.json",
-  JSON.stringify(
-    {
-      // DRAFT — not a valid .mcpb manifest. Field names will be aligned with
-      // the official desktop-extension spec before we ship a real .mcpb.
-      draft: true,
-      name: pluginMeta.name,
-      display_name: "Bridgistic",
-      version: pluginMeta.version,
-      description: pluginMeta.description,
-      author: pluginMeta.author,
-      license: pluginMeta.license,
-      server: {
-        type: "node",
-        entry_point: "server/index.js",
-        env_keys: ["BRIDGISTIC_SITE_URL", "BRIDGISTIC_KEY_ID", "BRIDGISTIC_KEY_SECRET"],
-      },
-    },
-    null,
-    2
-  ) + "\n"
-);
+mcpb(["validate", join(STAGE, "manifest.json")]);
+rmSync(OUT, { force: true });
+mkdirSync(DIST, { recursive: true });
+mcpb(["pack", STAGE, OUT]);
 
-zip.addFile("server/index.js", bundle);
-zip.addFile("server/package.json", join(ROOT, "plugins/bridgistic/server/package.json"));
-zip.addFile(
-  "claude_desktop_config.example.json",
-  join(ROOT, "plugins/bridgistic/package/claude_desktop_config.example.json")
-);
-zip.addFile("install-windows.ps1", join(ROOT, "plugins/bridgistic/package/install-windows.ps1"));
-zip.addFile("install-macos-linux.sh", join(ROOT, "plugins/bridgistic/package/install-macos-linux.sh"));
-zip.addFile("TROUBLESHOOTING.md", join(ROOT, "plugins/bridgistic/package/TROUBLESHOOTING.md"));
-zip.addString(
-  "README.md",
-  "# Bridgistic — Desktop package (mcpb-ready layout)\n\nThis is a plain zip today. Use install-windows.ps1 / install-macos-linux.sh\nto wire the bundled server into Claude Desktop, passing the absolute path\nto the extracted server/index.js.\n\nA true one-click .mcpb desktop extension is planned — see docs/ROADMAP.md.\n"
-);
+if (!existsSync(OUT)) {
+  console.error("✗ mcpb pack did not produce an output file.");
+  process.exit(1);
+}
+mcpb(["info", OUT]);
 
-const out = zip.write(join(DIST, "bridgistic-desktop-package.zip"));
-console.log(`✓ ${relative(ROOT, out)} (${(statSync(out).size / 1024).toFixed(0)} KB)`);
+rmSync(STAGE, { recursive: true, force: true });
+console.log(`\n✓ ${relative(ROOT, OUT)} (${(statSync(OUT).size / 1024).toFixed(0)} KB)`);
+console.log("  Users install it by double-clicking (Claude Desktop → Settings → Extensions).");

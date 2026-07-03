@@ -50,10 +50,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<strong><?php esc_html_e( 'Manual MCP JSON', 'bridgistic' ); ?></strong>
 					<span><?php esc_html_e( 'Raw config for any MCP-compatible client.', 'bridgistic' ); ?></span>
 				</button>
-				<button type="button" class="bridgistic-choice is-disabled" disabled>
+				<button type="button" class="bridgistic-choice" data-connection="extension">
 					<?php echo Page::icon( 'sparkle', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<strong><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?></strong>
-					<span><?php echo Page::badge( 'info', __( 'Coming soon', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+					<strong><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?> <?php echo Page::badge( 'pass', __( 'One-click', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></strong>
+					<span><?php esc_html_e( 'Download .mcpb, double-click, paste three values. No config files.', 'bridgistic' ); ?></span>
 				</button>
 			</div>
 			<div class="bridgistic-step-actions">
@@ -157,6 +157,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<div class="bridgistic-tabs" role="tablist">
 				<button type="button" class="bridgistic-tab is-active" data-config-tab="desktop" role="tab"><?php esc_html_e( 'Claude Desktop', 'bridgistic' ); ?></button>
+				<button type="button" class="bridgistic-tab" data-config-tab="extension" role="tab"><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="code" role="tab"><?php esc_html_e( 'Claude Code', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="cli" role="tab"><?php esc_html_e( 'CLI command', 'bridgistic' ); ?></button>
 			</div>
@@ -168,6 +169,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows)
 				</p>
 				<pre class="bridgistic-code" id="bridgistic-config-desktop"></pre>
+			</div>
+			<div data-config-panel="extension" hidden>
+				<p class="bridgistic-help">
+					<?php esc_html_e( 'One-click setup: download the extension, double-click it (Claude Desktop opens), then paste these three values when prompted. The secret is stored securely by Claude Desktop.', 'bridgistic' ); ?>
+				</p>
+				<div class="bridgistic-step-actions" style="margin-top:0">
+					<a class="bridgistic-button is-primary" href="https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb" target="_blank" rel="noopener noreferrer">
+						<?php echo Page::icon( 'download', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Download bridgistic.mcpb', 'bridgistic' ); ?>
+					</a>
+				</div>
+				<pre class="bridgistic-code" id="bridgistic-config-extension"></pre>
 			</div>
 			<div data-config-panel="code" hidden>
 				<p class="bridgistic-help"><?php esc_html_e( 'Easiest path — install from the plugin marketplace inside Claude Code:', 'bridgistic' ); ?></p>

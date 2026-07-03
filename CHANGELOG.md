@@ -3,6 +3,24 @@
 All notable changes to the Bridgistic free public distribution.
 Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](https://semver.org/).
 
+## [1.1.0] — 2026-07-03
+
+One-click connection and publishing release.
+
+### Added
+
+- **Claude Desktop Extension (`bridgistic.mcpb`)** — real MCPB bundle validated against the official schema (`@anthropic-ai/mcpb`). Double-click to install; Claude Desktop prompts for site URL, key ID, and secret via `user_config` (the secret is stored by the app, marked `sensitive`). Built by `npm run desktop:package`; branded 512px icon included.
+- **npm publishing** — `bridgistic-mcp-server` is publish-ready (`files` allowlist, `prepublishOnly` build+typecheck, `mcpName` field, npm-facing README with the registry ownership marker).
+- **MCP Registry listing** — `server.json` (`io.github.shubochandrosarker/bridgistic`, 2025-09-29 schema) so the server appears in the official registry Claude clients can browse.
+- **Release automation** (`.github/workflows/release.yml`) — pushing a `v*` tag: verifies all manifests match the tag, builds, tests, validates, creates the GitHub release with `bridgistic.mcpb` + both zips, publishes to npm (when `NPM_TOKEN` is configured) and then to the MCP Registry via GitHub OIDC (no secret needed).
+- **CI** (`.github/workflows/ci.yml`) — build, MCP tests, marketplace validation + secret scan, package builds, PHP lint on every PR.
+- Claude Setup wizard: **Desktop Extension** connection type is now live — download button for the latest `.mcpb` plus paste-ready values panel.
+- Validator: checks `mcpb/manifest.json` (user_config wiring, sensitive secret), `server.json` (name format, npm identifier match, README `mcp-name` marker), and version consistency across all six manifests.
+
+### Changed
+
+- Version 1.1.0 across marketplace, plugin, server, extension, and registry manifests; `docs/CLAUDE_DESKTOP.md` now leads with the one-click path; roadmap updated.
+
 ## [1.0.0] — 2026-07-03
 
 First public release of the free Bridgistic distribution.
