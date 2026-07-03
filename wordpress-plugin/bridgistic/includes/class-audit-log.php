@@ -87,6 +87,59 @@ final class AuditLog {
 		return is_array( $rows ) ? $rows : array();
 	}
 
+	/**
+	 * Named filter views for the admin Logs page. Purely additive on top of
+	 * recent(); each filter maps to indexed columns only.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function query( string $filter = 'all', int $limit = 100 ): array {
+		global $wpdb;
+		$limit = max( 1, min( 1000, $limit ) );
+		$table = self::table();
+
+		switch ( $filter ) {
+			case 'read':
+				$where = "( action LIKE '%.read%' OR action LIKE '%.list%' OR action LIKE '%.get%' OR action = 'site-info' )";
+				break;
+			case 'write':
+				$where = "( action LIKE '%.create%' OR action LIKE '%.update%' OR action LIKE '%.delete%' OR action LIKE '%.write%' OR action LIKE '%.toggle%' OR action LIKE '%.restore%' OR action LIKE '%.upload%' OR action = 'execute' )";
+				break;
+			case 'approval':
+				$where = "( status = 'queued' OR status LIKE 'approval%' )";
+				break;
+			case 'failed':
+				$where = "( status IN ('error','denied','snapshot_failed') )";
+				break;
+			case 'security':
+				$where = "( status = 'denied' )";
+				break;
+			case 'developer':
+				$where = "( action IN ('execute','db.read','db.write') OR action LIKE 'fs.%' )";
+				break;
+			default:
+				$where = '1=1';
+		}
+
+		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB -- custom table, fixed WHERE fragments, limit prepared.
+			$wpdb->prepare( "SELECT * FROM {$table} WHERE {$where} ORDER BY id DESC LIMIT %d", $limit ),
+			ARRAY_A
+		);
+		return is_array( $rows ) ? $rows : array();
+	}
+
+	/** Total number of audit rows (dashboard stat). */
+	public static function count(): int {
+		global $wpdb;
+		return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . self::table() ); // phpcs:ignore WordPress.DB
+	}
+
+	/** Most recent entry, or null (dashboard "last MCP request"). */
+	public static function latest(): ?array {
+		$rows = self::recent( 1 );
+		return $rows ? $rows[0] : null;
+	}
+
 	public static function prune(): void {
 		global $wpdb;
 		$cutoff = gmdate( 'Y-m-d H:i:s', time() - ( self::RETENTION_DAYS * DAY_IN_SECONDS ) );

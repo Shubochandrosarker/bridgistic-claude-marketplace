@@ -51,9 +51,11 @@ final class Plugin {
 			}
 		);
 
-		// Admin UI for connecting / managing scoped keys.
+		// Admin UI: dashboard, Claude setup, keys, health, logs, snapshots,
+		// playbooks, export, premium overview, settings.
 		if ( is_admin() ) {
-			( new Admin() )->hooks();
+			require_once BRIDGISTIC_DIR . 'admin/class-bridgistic-admin.php';
+			( new Admin\Controller() )->hooks();
 		}
 
 		// Daily cleanup of expired nonces + old audit rows.

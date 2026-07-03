@@ -8,7 +8,7 @@ Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Give Claude and Claude Cowork production-safe, scoped control of your WordPress site — signed requests, approvals, rollback, metering, and scheduled playbooks.
+Free local MCP bridge for Claude: connect Claude Desktop and Claude Code to WordPress with signed requests, scoped keys, approvals, audit logs, and snapshots.
 
 == Description ==
 
@@ -16,7 +16,7 @@ Bridgistic is the WordPress side of an MCP (Model Context Protocol) bridge. It l
 
 Every request is HMAC-signed and tied to a least-privilege key. Destructive actions can be previewed (dry-run), held for human approval, and are snapshotted first so any change is one call away from a rollback. Usage is metered per key, and playbooks can run unattended on a schedule.
 
-**Built for agencies and product teams** running many sites: one MCP server talks to many installs, each with its own scoped key.
+**This is the free local version** — the complete secure bridge for connecting Claude to your own sites. Advanced AI skills, a remote cloud connector, multi-site team dashboards, and white-label options belong to Bridgistic SaaS (separate product).
 
 = What you get =
 
@@ -25,7 +25,7 @@ Every request is HMAC-signed and tied to a least-privilege key. Destructive acti
 * Dry-run + human approval queue for destructive operations.
 * Automatic snapshot before every destructive write, with one-call rollback.
 * Full audit log of every request.
-* Per-key rate limiting and monthly usage metering (tiered).
+* Per-key rate limiting and basic usage metering.
 * Per-site memory and reusable, parameterised playbooks.
 * Scheduled playbooks that run unattended via cron.
 * A server-side PHP sandbox: executable PHP can only be written to one quarantined directory.

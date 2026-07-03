@@ -142,6 +142,45 @@ final class KeyStore {
 	}
 
 	/**
+	 * Soft-enable / disable a key. Disabled keys fail authentication
+	 * (HmacVerifier checks `enabled`) but stay listed for review.
+	 */
+	public static function set_enabled( string $key_id, bool $enabled ): void {
+		global $wpdb;
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			self::table(),
+			array( 'enabled' => $enabled ? 1 : 0 ),
+			array( 'key_id' => $key_id ),
+			array( '%d' ),
+			array( '%s' )
+		);
+	}
+
+	/**
+	 * Rotate a key's signing secret in place. The key_id stays stable so
+	 * configs only need the new secret. Returns the new plaintext secret
+	 * ONCE, or null if the key does not exist.
+	 */
+	public static function rotate_secret( string $key_id ): ?string {
+		global $wpdb;
+
+		if ( ! self::get( $key_id ) ) {
+			return null;
+		}
+
+		$secret = 'wps_' . bin2hex( random_bytes( 24 ) );
+		$wpdb->update( // phpcs:ignore WordPress.DB
+			self::table(),
+			array( 'secret_enc' => Crypto::encrypt( $secret ) ),
+			array( 'key_id' => $key_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		return $secret;
+	}
+
+	/**
 	 * Decrypt and return the live signing secret for a key record.
 	 *
 	 * @param array<string,mixed> $row Row from get().
