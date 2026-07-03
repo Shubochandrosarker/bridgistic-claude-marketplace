@@ -1,21 +1,31 @@
 name: Release
 
-# Publishes everything from one tag push (e.g. v1.1.0):
-#   1. GitHub release with all user-facing assets
-#      (bridgistic.mcpb, claude package, WordPress plugin zip)
+# Publishes everything in one run:
+#   1. GitHub release (tag created automatically if needed) with all
+#      user-facing assets: bridgistic.mcpb, claude package, WordPress plugin zip
 #   2. npm publish of bridgistic-mcp-server  — needs the NPM_TOKEN secret;
 #      skipped with a notice when it is not configured
 #   3. MCP Registry publish (registry.modelcontextprotocol.io) via GitHub
 #      OIDC — no secret needed; runs only after a successful npm publish
 #      (the registry validates the npm package exists and carries the
 #      mcp-name marker)
+#
+# Two ways to trigger:
+#   - push a tag:  git tag v1.1.0 && git push origin v1.1.0
+#   - Actions → Release → "Run workflow" with the version (e.g. 1.1.0);
+#     the tag is created on the selected ref by the release step
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 1.1.0) — must match the manifests"
+        required: true
 
 permissions:
-  contents: write # create the GitHub release
+  contents: write # create the GitHub release + tag
   id-token: write # GitHub OIDC login for the MCP Registry
 
 jobs:
@@ -29,16 +39,32 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
 
-      - name: Check versions match the tag
+      - name: Resolve version
+        id: ver
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$VERSION' is not a valid semver version"; exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check manifests match the version
+        run: |
+          V="${{ steps.ver.outputs.version }}"
           for f in package.json mcp-server/package.json plugins/bridgistic/.claude-plugin/plugin.json mcpb/manifest.json server.json; do
-            V=$(node -p "require('./$f').version")
-            if [ "$V" != "$TAG" ]; then
-              echo "::error::$f is at $V but the tag is $TAG"; exit 1
+            HAVE=$(node -p "require('./$f').version")
+            if [ "$HAVE" != "$V" ]; then
+              echo "::error::$f is at $HAVE but the release version is $V"; exit 1
             fi
           done
-          echo "All manifests at $TAG"
+          echo "All manifests at $V"
 
       - name: Build
         run: npm run build
@@ -58,12 +84,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "Bridgistic $GITHUB_REF_NAME" \
-            --generate-notes \
-            dist/bridgistic.mcpb \
-            dist/bridgistic-claude-package.zip \
-            dist/bridgistic-wordpress-plugin.zip
+          TAG="${{ steps.ver.outputs.tag }}"
+          ASSETS="dist/bridgistic.mcpb dist/bridgistic-claude-package.zip dist/bridgistic-wordpress-plugin.zip"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG exists — replacing assets"
+            gh release upload "$TAG" $ASSETS --clobber
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Bridgistic $TAG" \
+              --generate-notes \
+              $ASSETS
+          fi
 
       - name: Publish to npm
         id: npm
