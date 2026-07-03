@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build MCP server + plugin bundle
+        run: npm run build
+
+      - name: MCP server tests (contract + integration)
+        run: npm test
+
+      - name: Validate marketplace structure + secret scan
+        run: npm run validate
+
+      - name: Build distribution packages
+        run: npm run package
+
+      - name: Build Claude Desktop extension (.mcpb)
+        run: npm run desktop:package
+
+      - name: PHP lint (WordPress plugin)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q php-cli >/dev/null
+          find wordpress-plugin -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+          echo "All PHP files lint clean"

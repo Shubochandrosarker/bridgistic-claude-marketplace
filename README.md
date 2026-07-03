@@ -73,7 +73,17 @@ export BRIDGISTIC_KEY_SECRET="your_key_secret"
 
 Details: [docs/CLAUDE_CODE.md](docs/CLAUDE_CODE.md).
 
-### 3b. Or set up Claude Desktop manually
+### 3b. Or one-click Claude Desktop extension
+
+Download [`bridgistic.mcpb`](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb), double-click it, and paste your site URL, key ID, and secret when Claude Desktop prompts (the secret is stored securely by the app — no config files, no terminal). Details: [docs/CLAUDE_DESKTOP.md](docs/CLAUDE_DESKTOP.md).
+
+Also available via the [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.shubochandrosarker/bridgistic`, and on npm:
+
+```bash
+npx bridgistic-mcp-server
+```
+
+### 3c. Or set up Claude Desktop manually
 
 Clone this repo and build the server once:
 

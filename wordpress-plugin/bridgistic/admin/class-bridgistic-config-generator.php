@@ -65,6 +65,21 @@ final class ConfigGenerator {
 	}
 
 	/**
+	 * Paste-ready values for the Claude Desktop extension (.mcpb) prompt.
+	 * Plain text, not JSON — users copy these into the extension's settings UI.
+	 */
+	public static function extension_values( string $key_id, ?string $secret = null ): string {
+		return implode(
+			"\n",
+			array(
+				'WordPress Site URL:    ' . home_url(),
+				'Bridgistic Key ID:     ' . $key_id,
+				'Bridgistic Key Secret: ' . ( $secret ?: self::SECRET_PLACEHOLDER ),
+			)
+		);
+	}
+
+	/**
 	 * @return array<string,string>
 	 */
 	private static function env_block( string $key_id, ?string $secret ): array {

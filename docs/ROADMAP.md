@@ -11,16 +11,23 @@ What's planned for this repository. SaaS plans live elsewhere; this roadmap only
 - Export package zip with configs + install scripts
 - Validation/packaging tooling and secret scanning
 
-## Next (1.1)
+## Shipped (1.1.0)
 
-- **Claude Desktop Extension (`.mcpb`)** — one-click desktop install. The layout groundwork exists (`npm run desktop:package`); shipping waits on a validated manifest against the official spec, code signing, and install-flow testing. We will not fake compatibility before that.
+- **Claude Desktop Extension (`.mcpb`)** — one-click install, validated against the official MCPB schema; site URL / key ID / secret collected via `user_config` (secret stored by Claude Desktop)
+- **npm-publishable server** (`npx bridgistic-mcp-server`) with `prepublishOnly` build
+- **MCP Registry listing** (`server.json`, `io.github.shubochandrosarker/bridgistic`) published automatically from CI via GitHub OIDC
+- **Release automation** — one tag push builds, tests, validates, creates the GitHub release with all assets, publishes npm + registry
+- CI on every PR: build, tests, marketplace validation + secret scan, PHP lint
+
+## Next (1.2)
+
+- Submission to Anthropic's Claude Desktop extension directory (in-app browsing)
+- Extension signing (`mcpb sign`) with a project certificate
 - Health Check: PHP zip extension check, object-cache nonce-storage warning, downloadable report file
-- Setup wizard: QR/deep-link hand-off between WP Admin and the desktop app where possible
 - i18n: complete translator-ready strings and a `languages/` refresh
 
 ## Later (1.x)
 
-- npm-published server (`npx bridgistic-mcp-server`) as an alternative to the bundled file
 - WordPress.org plugin directory submission
 - Multisite network admin support
 - More built-in manual playbooks (community-suggested, safety-reviewed)

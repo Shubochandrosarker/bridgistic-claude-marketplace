@@ -283,18 +283,12 @@
 			if ( ! state.configs ) {
 				return;
 			}
-			var desktop = $( '#bridgistic-config-desktop' );
-			var code = $( '#bridgistic-config-code' );
-			var cli = $( '#bridgistic-config-cli' );
-			if ( desktop ) {
-				desktop.textContent = state.configs.desktop;
-			}
-			if ( code ) {
-				code.textContent = state.configs.code;
-			}
-			if ( cli ) {
-				cli.textContent = state.configs.cli;
-			}
+			[ 'desktop', 'code', 'cli', 'extension' ].forEach( function ( key ) {
+				var node = $( '#bridgistic-config-' + key );
+				if ( node && state.configs[ key ] ) {
+					node.textContent = state.configs[ key ];
+				}
+			} );
 		};
 
 		var showConfigTab = function ( name ) {
@@ -311,6 +305,8 @@
 				showConfigTab( 'code' );
 			} else if ( state.connection === 'manual' ) {
 				showConfigTab( 'cli' );
+			} else if ( state.connection === 'extension' ) {
+				showConfigTab( 'extension' );
 			} else {
 				showConfigTab( 'desktop' );
 			}

@@ -1,0 +1,87 @@
+name: Release
+
+# Publishes everything from one tag push (e.g. v1.1.0):
+#   1. GitHub release with all user-facing assets
+#      (bridgistic.mcpb, claude package, WordPress plugin zip)
+#   2. npm publish of bridgistic-mcp-server  — needs the NPM_TOKEN secret;
+#      skipped with a notice when it is not configured
+#   3. MCP Registry publish (registry.modelcontextprotocol.io) via GitHub
+#      OIDC — no secret needed; runs only after a successful npm publish
+#      (the registry validates the npm package exists and carries the
+#      mcp-name marker)
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write # create the GitHub release
+  id-token: write # GitHub OIDC login for the MCP Registry
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check versions match the tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          for f in package.json mcp-server/package.json plugins/bridgistic/.claude-plugin/plugin.json mcpb/manifest.json server.json; do
+            V=$(node -p "require('./$f').version")
+            if [ "$V" != "$TAG" ]; then
+              echo "::error::$f is at $V but the tag is $TAG"; exit 1
+            fi
+          done
+          echo "All manifests at $TAG"
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Validate
+        run: npm run validate
+
+      - name: Build packages + desktop extension
+        run: |
+          npm run package
+          npm run desktop:package
+
+      - name: Create GitHub release with assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Bridgistic $GITHUB_REF_NAME" \
+            --generate-notes \
+            dist/bridgistic.mcpb \
+            dist/bridgistic-claude-package.zip \
+            dist/bridgistic-wordpress-plugin.zip
+
+      - name: Publish to npm
+        id: npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::notice::NPM_TOKEN secret not set — skipping npm + MCP Registry publish. Add it in repo Settings → Secrets to enable."
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            npm publish --prefix mcp-server --access public
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to the MCP Registry
+        if: steps.npm.outputs.published == 'true'
+        run: |
+          curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+          echo "Published io.github.shubochandrosarker/bridgistic to registry.modelcontextprotocol.io"
