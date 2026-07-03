@@ -1,0 +1,35 @@
+{
+  "name": "bridgistic-claude-marketplace",
+  "version": "1.0.0",
+  "description": "Free public distribution of Bridgistic: Claude Code marketplace, Claude Desktop setup package, WordPress plugin, and local MCP server for safely connecting Claude to WordPress.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm --prefix mcp-server install && npm --prefix mcp-server run build && npm --prefix mcp-server run bundle",
+    "validate": "node scripts/validate-marketplace.js",
+    "package": "node scripts/build-package.js",
+    "desktop:package": "node scripts/create-desktop-package.js",
+    "test": "npm --prefix mcp-server test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "WordPressistic",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubochandrosarker/bridgistic-claude-marketplace.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/issues"
+  },
+  "keywords": [
+    "mcp",
+    "claude",
+    "claude-code",
+    "wordpress",
+    "model-context-protocol",
+    "wordpressistic"
+  ]
+}

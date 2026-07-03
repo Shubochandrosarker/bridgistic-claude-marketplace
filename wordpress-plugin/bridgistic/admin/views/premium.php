@@ -1,0 +1,56 @@
+<?php
+/**
+ * Premium Features view — locked showcase, display only.
+ *
+ * @package Bridgistic
+ * @var array<string,mixed> $data
+ */
+
+declare( strict_types=1 );
+
+namespace Bridgistic\Admin;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
+
+<header class="bridgistic-page-head bridgistic-fade-in">
+	<h1><?php esc_html_e( 'Premium Features', 'bridgistic' ); ?></h1>
+	<p><?php esc_html_e( 'The free version is the complete local bridge: keys, scopes, approvals, logs, snapshots, playbooks. Bridgistic SaaS adds skills, cloud connectivity, and team workflows on top.', 'bridgistic' ); ?></p>
+</header>
+
+<div class="bridgistic-callout is-info bridgistic-fade-in">
+	<?php echo Page::icon( 'info', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+	<p><?php esc_html_e( 'These features are part of Bridgistic SaaS and are not included in the free local MCP version. Nothing on this page collects payment or unlocks anything.', 'bridgistic' ); ?></p>
+</div>
+
+<section class="bridgistic-grid is-3 bridgistic-stagger">
+	<?php foreach ( $data['sections'] as $section ) : ?>
+		<article class="bridgistic-card bridgistic-locked-card is-tall">
+			<div class="bridgistic-locked-blur" aria-hidden="true">
+				<div class="bridgistic-skeleton-line"></div>
+				<div class="bridgistic-skeleton-line is-short"></div>
+				<div class="bridgistic-skeleton-line"></div>
+				<div class="bridgistic-skeleton-line is-short"></div>
+			</div>
+			<div class="bridgistic-locked-overlay">
+				<?php echo Page::icon( (string) $section['icon'], 22 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<h3>
+					<?php echo Page::icon( 'lock', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php echo esc_html( (string) $section['label'] ); ?>
+				</h3>
+				<p><?php echo esc_html( (string) $section['description'] ); ?></p>
+				<?php if ( ! empty( $section['items'] ) ) : ?>
+					<ul class="bridgistic-locked-list">
+						<?php foreach ( $section['items'] as $item ) : ?>
+							<li><?php echo esc_html( (string) $item ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+				<?php echo Page::badge( 'muted', __( 'Coming in Bridgistic SaaS', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<a class="bridgistic-button is-ghost is-small" href="https://wordpressistic.com" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Learn More', 'bridgistic' ); ?></a>
+			</div>
+		</article>
+	<?php endforeach; ?>
+</section>
