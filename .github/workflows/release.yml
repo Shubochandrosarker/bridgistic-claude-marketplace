@@ -122,4 +122,4 @@ jobs:
           curl -sSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
           ./mcp-publisher login github-oidc
           ./mcp-publisher publish
-          echo "Published io.github.shubochandrosarker/bridgistic to registry.modelcontextprotocol.io"
+          echo "Published io.github.Shubochandrosarker/bridgistic to registry.modelcontextprotocol.io"
