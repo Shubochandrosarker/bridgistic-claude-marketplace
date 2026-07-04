@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.shubochandrosarker/bridgistic",
-  "description": "Connect Claude to WordPress safely: HMAC-signed requests, scoped keys, approvals, audit logs, and snapshots via the free Bridgistic plugin.",
+  "description": "Connect Claude to WordPress safely: signed requests, scoped keys, approvals, logs, snapshots.",
   "repository": {
     "url": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace",
     "source": "github"

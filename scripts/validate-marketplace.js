@@ -173,6 +173,9 @@ if (registry) {
   if (!/^[a-zA-Z0-9.-]+\/[a-zA-Z0-9._-]+$/.test(registry.name ?? "")) {
     fail(`server.json: name "${registry.name}" is not namespace/name format`);
   }
+  if ((registry.description ?? "").length > 100) {
+    fail(`server.json: description is ${registry.description.length} chars — the registry rejects > 100`);
+  }
   const npmPkg = registry.packages?.find((p) => p.registryType === "npm");
   if (!npmPkg) {
     fail("server.json: no npm package entry");

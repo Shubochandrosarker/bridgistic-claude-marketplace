@@ -102,9 +102,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          V="${{ steps.ver.outputs.version }}"
           if [ -z "$NODE_AUTH_TOKEN" ]; then
             echo "::notice::NPM_TOKEN secret not set — skipping npm + MCP Registry publish. Add it in repo Settings → Secrets to enable."
             echo "published=false" >> "$GITHUB_OUTPUT"
+          elif [ -n "$(npm view "bridgistic-mcp-server@$V" version 2>/dev/null)" ]; then
+            echo "bridgistic-mcp-server@$V is already on npm — skipping publish, continuing to the registry."
+            echo "published=true" >> "$GITHUB_OUTPUT"
           else
             # cd, not --prefix: npm publish ignores --prefix and would try to
             # publish the (private) repo root instead of the server package.
