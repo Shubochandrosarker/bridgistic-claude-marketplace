@@ -1,10 +1,10 @@
 {
   "manifest_version": "0.2",
   "name": "bridgistic",
-  "display_name": "Bridgistic — WordPress Bridge",
-  "version": "1.1.0",
+  "display_name": "Bridgistic \u2014 WordPress Bridge",
+  "version": "1.1.1",
   "description": "Connect Claude to WordPress safely: signed requests, scoped keys, approvals, audit logs, and snapshots.",
-  "long_description": "Bridgistic is a safe bridge between Claude and your WordPress site. Instead of a full-admin Application Password, you mint a scoped key in the free Bridgistic WordPress plugin; this extension runs the local MCP server that signs every request with it. The plugin verifies signatures (HMAC-SHA256 with replay protection), enforces the key's scopes, queues destructive operations for human approval, snapshots before risky writes, and records a full audit log.\n\nSetup: install the Bridgistic WordPress plugin on your site, open WP Admin → Bridgistic → Claude Setup, create a key (the secret is shown once), then enter your site URL, key ID, and secret below.",
+  "long_description": "Bridgistic is a safe bridge between Claude and your WordPress site. Instead of a full-admin Application Password, you mint a scoped key in the free Bridgistic WordPress plugin; this extension runs the local MCP server that signs every request with it. The plugin verifies signatures (HMAC-SHA256 with replay protection), enforces the key's scopes, queues destructive operations for human approval, snapshots before risky writes, and records a full audit log.\n\nSetup: install the Bridgistic WordPress plugin on your site, open WP Admin \u2192 Bridgistic \u2192 Claude Setup, create a key (the secret is shown once), then enter your site URL, key ID, and secret below.",
   "author": {
     "name": "WordPressistic",
     "email": "support@wordpressistic.com",
@@ -48,35 +48,60 @@
     "site_url": {
       "type": "string",
       "title": "WordPress Site URL",
-      "description": "Your site address exactly as shown in WP Admin → Settings → General, e.g. https://example.com",
+      "description": "Your site address exactly as shown in WP Admin \u2192 Settings \u2192 General, e.g. https://example.com",
       "required": true
     },
     "key_id": {
       "type": "string",
       "title": "Bridgistic Key ID",
-      "description": "Public key id (wpk_…) from WP Admin → Bridgistic → Claude Setup.",
+      "description": "Public key id (wpk_\u2026) from WP Admin \u2192 Bridgistic \u2192 Claude Setup.",
       "required": true
     },
     "key_secret": {
       "type": "string",
       "title": "Bridgistic Key Secret",
-      "description": "Secret (wps_…) shown once when the key was created. Stored securely by Claude Desktop.",
+      "description": "Secret (wps_\u2026) shown once when the key was created. Stored securely by Claude Desktop.",
       "sensitive": true,
       "required": true
     }
   },
   "tools": [
-    { "name": "bridgistic_get_site_info", "description": "Read the site's stack: versions, theme, plugins, detected frameworks" },
-    { "name": "bridgistic_list_posts", "description": "List posts, pages, and custom post types" },
-    { "name": "bridgistic_create_post", "description": "Create content (requires posts:write scope)" },
-    { "name": "bridgistic_upload_media", "description": "Upload media (requires media:write scope)" },
-    { "name": "bridgistic_snapshot_create", "description": "Take a reversible snapshot before risky changes" },
-    { "name": "bridgistic_snapshot_restore", "description": "One-call rollback from any snapshot" },
-    { "name": "bridgistic_playbook_run", "description": "Run a saved multi-step playbook" }
+    {
+      "name": "bridgistic_get_site_info",
+      "description": "Read the site's stack: versions, theme, plugins, detected frameworks"
+    },
+    {
+      "name": "bridgistic_list_posts",
+      "description": "List posts, pages, and custom post types"
+    },
+    {
+      "name": "bridgistic_create_post",
+      "description": "Create content (requires posts:write scope)"
+    },
+    {
+      "name": "bridgistic_upload_media",
+      "description": "Upload media (requires media:write scope)"
+    },
+    {
+      "name": "bridgistic_snapshot_create",
+      "description": "Take a reversible snapshot before risky changes"
+    },
+    {
+      "name": "bridgistic_snapshot_restore",
+      "description": "One-call rollback from any snapshot"
+    },
+    {
+      "name": "bridgistic_playbook_run",
+      "description": "Run a saved multi-step playbook"
+    }
   ],
   "tools_generated": true,
   "compatibility": {
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
     "runtimes": {
       "node": ">=20.0.0"
     }
