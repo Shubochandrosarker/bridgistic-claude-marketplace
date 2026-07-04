@@ -3,6 +3,10 @@
 All notable changes to the Bridgistic free public distribution.
 Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](https://semver.org/).
 
+## [1.1.1] — 2026-07-04
+
+Patch: corrected MCP Registry namespace casing (io.github.Shubochandrosarker) in the npm package metadata so registry ownership validation passes. No functional changes.
+
 ## [1.1.0] — 2026-07-03
 
 One-click connection and publishing release.
