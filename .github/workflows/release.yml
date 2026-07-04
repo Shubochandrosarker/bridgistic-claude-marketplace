@@ -106,7 +106,9 @@ jobs:
             echo "::notice::NPM_TOKEN secret not set — skipping npm + MCP Registry publish. Add it in repo Settings → Secrets to enable."
             echo "published=false" >> "$GITHUB_OUTPUT"
           else
-            npm publish --prefix mcp-server --access public
+            # cd, not --prefix: npm publish ignores --prefix and would try to
+            # publish the (private) repo root instead of the server package.
+            (cd mcp-server && npm publish --access public)
             echo "published=true" >> "$GITHUB_OUTPUT"
           fi
 
