@@ -183,7 +183,7 @@
 	var setup = $( '#bridgistic-setup' );
 	if ( setup ) {
 		var state = {
-			connection: 'desktop',
+			connection: 'extension',
 			preset: 'read_only',
 			configs: null,
 			keyId: null,

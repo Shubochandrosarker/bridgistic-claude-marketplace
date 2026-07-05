@@ -56,7 +56,11 @@ Download `bridgistic-wordpress-plugin.zip` from [Releases](https://github.com/Sh
 
 Open **WP Admin → Bridgistic → Claude Setup**, pick a connection type and a permission preset (start with **Read-only**), and create a key. **The secret is shown once** — copy it immediately.
 
-### 3a. Install in Claude Code
+### 3a. One-click Claude Desktop extension (recommended — no terminal, no Node.js)
+
+Download [`bridgistic.mcpb`](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb), double-click it, and paste your site URL, key ID, and secret when Claude Desktop prompts (the secret is stored securely by the app — no config files, no terminal). Details: [docs/CLAUDE_DESKTOP.md](docs/CLAUDE_DESKTOP.md).
+
+### 3b. Or install in Claude Code
 
 ```
 /plugin marketplace add Shubochandrosarker/bridgistic-claude-marketplace
@@ -71,11 +75,7 @@ export BRIDGISTIC_KEY_ID="your_key_id"
 export BRIDGISTIC_KEY_SECRET="your_key_secret"
 ```
 
-Details: [docs/CLAUDE_CODE.md](docs/CLAUDE_CODE.md).
-
-### 3b. Or one-click Claude Desktop extension
-
-Download [`bridgistic.mcpb`](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb), double-click it, and paste your site URL, key ID, and secret when Claude Desktop prompts (the secret is stored securely by the app — no config files, no terminal). Details: [docs/CLAUDE_DESKTOP.md](docs/CLAUDE_DESKTOP.md).
+Requires Node.js 20+. Details: [docs/CLAUDE_CODE.md](docs/CLAUDE_CODE.md).
 
 Also available via the [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.shubochandrosarker/bridgistic`, and on npm:
 

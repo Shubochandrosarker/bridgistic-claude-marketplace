@@ -38,8 +38,10 @@ Bridgistic is one of the WordPressistic ecosystem products. It works standalone 
 
 1. Upload the `bridgistic` folder to `/wp-content/plugins/`, or install the zip via Plugins → Add New → Upload.
 2. Activate the plugin.
-3. Go to **Bridgistic → Connect** and mint a scoped key. Copy the secret — it is shown once.
-4. Configure the Bridgistic MCP server with your site URL, key id, and secret.
+3. Go to **Bridgistic → Claude Setup** and follow the 5-step wizard to mint a scoped key. Copy the secret — it is shown once.
+4. Connect an MCP client to the key. Two paths, pick one:
+   * **Claude Desktop, no install needed:** download the `bridgistic.mcpb` extension from the wizard, double-click it, and paste in the site URL, key id, and secret when prompted. No terminal, no Node.js.
+   * **Claude Code, or a manual setup:** requires Node.js 20+ to build/run the MCP server, plus editing your client's MCP config with the site URL, key id, and secret. The wizard generates the exact config and commands for you.
 
 For reliable scheduled playbooks, disable WP-Cron and run a real system cron against `wp-cron.php` (the Schedules screen shows the exact line).
 
@@ -59,10 +61,21 @@ Only inside a single quarantined sandbox directory under uploads, with direct we
 
 == Changelog ==
 
+= 1.1.1 =
+* Patch: corrected MCP Registry namespace casing. No functional changes.
+
+= 1.1.0 =
+* Claude Desktop Extension (`bridgistic.mcpb`) — one-click install, no Node.js required.
+* npm publishing and an MCP Registry listing so Claude clients can discover the server.
+* Claude Setup wizard: Desktop Extension is now a live connection option.
+
 = 1.0.0 =
 * Initial public release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Namespace casing patch only — safe to update any time.
 
 = 1.0.0 =
 First public release.
