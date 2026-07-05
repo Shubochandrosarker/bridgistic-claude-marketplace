@@ -13,6 +13,9 @@
   "homepage": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace",
   "documentation": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/blob/main/docs/CLAUDE_DESKTOP.md",
   "support": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/issues",
+  "privacy_policies": [
+    "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/blob/main/docs/PRIVACY.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Shubochandrosarker/bridgistic-claude-marketplace"
