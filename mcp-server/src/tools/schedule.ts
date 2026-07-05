@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { callBridge } from "../services/wp-client.js";
 import { siteParam, run, present } from "./helpers.js";
 
@@ -22,7 +22,7 @@ const recurrence = z.enum([
   "weekly",
 ]);
 
-export function registerScheduleTools(server: McpServer, registry: ConnectionRegistry): void {
+export function registerScheduleTools(server: McpServer, registry: SiteRegistry): void {
   // ---- schedule.create ----------------------------------------------------
   server.registerTool(
     "bridgistic_schedule_create",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { BridgeRequestError } from "../services/wp-client.js";
 import { CHARACTER_LIMIT } from "../constants.js";
 
@@ -84,4 +84,4 @@ export function present(data: unknown): ToolResult {
   };
 }
 
-export type Registry = ConnectionRegistry;
+export type Registry = SiteRegistry;

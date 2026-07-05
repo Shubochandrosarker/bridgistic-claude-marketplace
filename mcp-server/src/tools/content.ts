@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { callBridge } from "../services/wp-client.js";
 import { siteParam, guardParams, withGuard, run, present } from "./helpers.js";
 
@@ -18,7 +18,7 @@ const READ = {
   openWorldHint: true,
 } as const;
 
-export function registerContentTools(server: McpServer, registry: ConnectionRegistry): void {
+export function registerContentTools(server: McpServer, registry: SiteRegistry): void {
   // ---- posts.list ---------------------------------------------------------
   server.registerTool(
     "bridgistic_list_posts",

@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { callBridge } from "../services/wp-client.js";
 import { siteParam, guardParams, withGuard, run, present } from "./helpers.js";
 import { registerContentTools } from "./content.js";
@@ -9,7 +9,7 @@ import { registerSafetyTools } from "./safety.js";
 import { registerIntelTools } from "./intel.js";
 import { registerScheduleTools } from "./schedule.js";
 
-export function registerTools(server: McpServer, registry: ConnectionRegistry): void {
+export function registerTools(server: McpServer, registry: SiteRegistry): void {
   // ---- list sites ---------------------------------------------------------
   server.registerTool(
     "bridgistic_list_sites",

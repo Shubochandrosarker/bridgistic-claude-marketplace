@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { callBridge } from "../services/wp-client.js";
 import { siteParam, run, present } from "./helpers.js";
 
@@ -18,7 +18,7 @@ const WRITE = {
   openWorldHint: true,
 } as const;
 
-export function registerIntelTools(server: McpServer, registry: ConnectionRegistry): void {
+export function registerIntelTools(server: McpServer, registry: SiteRegistry): void {
   // ---- usage --------------------------------------------------------------
   server.registerTool(
     "bridgistic_usage",

@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { ConnectionRegistry } from "../services/connections.js";
+import type { SiteRegistry } from "../types.js";
 import { callBridge } from "../services/wp-client.js";
 import { siteParam, guardParams, withGuard, run, present } from "./helpers.js";
 
@@ -18,7 +18,7 @@ const READ = {
   openWorldHint: true,
 } as const;
 
-export function registerAdminTools(server: McpServer, registry: ConnectionRegistry): void {
+export function registerAdminTools(server: McpServer, registry: SiteRegistry): void {
   // ---- options.get --------------------------------------------------------
   server.registerTool(
     "bridgistic_get_option",

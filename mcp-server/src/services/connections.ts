@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from "node:fs";
-import type { Connection } from "../types.js";
+import type { Connection, SiteRegistry } from "../types.js";
 import { log } from "./logger.js";
 
 /**
@@ -11,7 +11,7 @@ import { log } from "./logger.js";
  *   2. Multi-site: a JSON registry file (BRIDGISTIC_CONNECTIONS path)
  *      mapping aliases -> { siteUrl, keyId, secret }. The agent passes `site`.
  */
-export class ConnectionRegistry {
+export class ConnectionRegistry implements SiteRegistry {
   private connections = new Map<string, Connection>();
 
   constructor() {
