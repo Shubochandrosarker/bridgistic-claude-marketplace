@@ -19,6 +19,7 @@ declare( strict_types=1 );
 namespace Bridgistic\Admin;
 
 use Bridgistic\AuditLog;
+use Bridgistic\Oauth;
 use Bridgistic\Playbooks;
 use Bridgistic\Snapshot;
 use Bridgistic\Security\KeyStore;
@@ -48,6 +49,7 @@ final class Actions {
 		add_action( 'admin_post_bridgistic_save_allowlist', array( $this, 'handle_save_allowlist' ) );
 		add_action( 'admin_post_bridgistic_schedule_action', array( $this, 'handle_schedule_action' ) );
 		add_action( 'admin_post_bridgistic_export_package', array( $this, 'handle_export_package' ) );
+		add_action( 'admin_post_bridgistic_oauth_consent', array( $this, 'handle_oauth_consent' ) );
 
 		// AJAX endpoints (admin only; no nopriv variants on purpose).
 		add_action( 'wp_ajax_bridgistic_setup_create_key', array( $this, 'ajax_setup_create_key' ) );
@@ -125,6 +127,36 @@ final class Actions {
 			KeyStore::revoke( $key_id );
 		}
 		wp_safe_redirect( admin_url( 'admin.php?page=bridgistic-keys&deleted=1' ) );
+		exit;
+	}
+
+	public function handle_oauth_consent(): void {
+		$this->guard_post( 'bridgistic_oauth_consent' );
+
+		$client_id      = isset( $_POST['client_id'] ) ? sanitize_text_field( wp_unslash( $_POST['client_id'] ) ) : '';
+		$redirect_uri   = isset( $_POST['redirect_uri'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_uri'] ) ) : '';
+		$code_challenge = isset( $_POST['code_challenge'] ) ? sanitize_text_field( wp_unslash( $_POST['code_challenge'] ) ) : '';
+		$state          = isset( $_POST['state'] ) ? sanitize_text_field( wp_unslash( $_POST['state'] ) ) : '';
+		$decision       = isset( $_POST['decision'] ) ? sanitize_key( wp_unslash( $_POST['decision'] ) ) : '';
+		$preset_id      = isset( $_POST['preset'] ) ? sanitize_key( wp_unslash( $_POST['preset'] ) ) : 'read_only';
+
+		// Re-validate independently of the hidden fields - a nonce proves this
+		// browser session submitted the form, not that the redirect target is safe.
+		if ( '' === $client_id || Oauth::CLIENT_ID !== $client_id || '' === $redirect_uri || ! Oauth::redirect_uri_allowed( $redirect_uri ) || '' === $code_challenge || '' === $state ) {
+			wp_die( esc_html__( 'Invalid or unsafe OAuth request.', 'bridgistic' ) );
+		}
+
+		if ( 'allow' !== $decision ) {
+			AuditLog::record( 'admin-ui', 'oauth.deny', 'ok', array(), 'Cloud connector authorization denied from wp-admin' );
+			wp_redirect( $redirect_uri . '?' . http_build_query( array( 'error' => 'access_denied', 'state' => $state ) ) ); // phpcs:ignore WordPress.Security.SafeRedirect -- redirect_uri already host-validated by Oauth::redirect_uri_allowed().
+			exit;
+		}
+
+		$preset = Oauth::preset_or_default( $preset_id );
+		$code   = Oauth::issue_code( $redirect_uri, $code_challenge, $preset['scopes'], (bool) $preset['require_approval'] );
+
+		AuditLog::record( 'admin-ui', 'oauth.approve', 'ok', array( 'preset' => $preset_id ), 'Cloud connector authorized from wp-admin' );
+		wp_redirect( $redirect_uri . '?' . http_build_query( array( 'code' => $code, 'state' => $state ) ) ); // phpcs:ignore WordPress.Security.SafeRedirect -- see above.
 		exit;
 	}
 

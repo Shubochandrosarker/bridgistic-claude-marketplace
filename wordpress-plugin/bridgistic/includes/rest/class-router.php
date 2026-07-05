@@ -22,6 +22,10 @@ final class Router {
 		( new SiteController() )->register( $ns );
 		( new ExecuteController() )->register( $ns );
 
+		// Cloud connector OAuth (the one unauthenticated route â see
+		// OauthController's docblock for why it bypasses Controller::authenticate()).
+		( new OauthController() )->register( $ns );
+
 		// Structured tools.
 		( new PostsController() )->register( $ns );
 		( new MediaController() )->register( $ns );
