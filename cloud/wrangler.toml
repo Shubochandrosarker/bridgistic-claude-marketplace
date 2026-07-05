@@ -1,0 +1,36 @@
+name = "bridgistic-cloud"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Update to your own zone once mcp.wpistic.cloud is added to this account.
+routes = [
+  { pattern = "mcp.wpistic.cloud/*", zone_name = "wpistic.cloud" }
+]
+
+# Durable Object: one instance per active MCP session.
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "BridgisticMcpAgent"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BridgisticMcpAgent"]
+
+# Create with: wrangler d1 create bridgistic-cloud
+# Then run migrations/0001_init.sql with: wrangler d1 execute bridgistic-cloud --file=migrations/0001_init.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "bridgistic-cloud"
+database_id = "REPLACE_WITH_REAL_D1_DATABASE_ID"
+
+# Required by @cloudflare/workers-oauth-provider for its own grant/token/client storage.
+# Create with: wrangler kv namespace create OAUTH_KV
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "REPLACE_WITH_REAL_KV_NAMESPACE_ID"
+
+# Secret (never committed - set with `wrangler secret put TENANT_ENC_KEY`):
+#   TENANT_ENC_KEY  openssl rand -base64 32
+# There is no client secret for the WordPress leg by design - see the
+# docblock on wordpress-plugin/bridgistic/includes/class-oauth.php.

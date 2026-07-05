@@ -21,10 +21,25 @@ What's planned for this repository. SaaS plans live elsewhere; this roadmap only
 
 ## Next (1.2)
 
-- Submission to Anthropic's Claude Desktop extension directory (in-app browsing)
+- Submission to Anthropic's Claude Desktop extension directory (in-app browsing) — needs a published privacy policy (`docs/PRIVACY.md`, done) plus the interest-form submission itself
 - Extension signing (`mcpb sign`) with a project certificate
 - Health Check: PHP zip extension check, object-cache nonce-storage warning, downloadable report file
 - i18n: complete translator-ready strings and a `languages/` refresh
+- A Claude Code onboarding skill that collects site URL / key / secret conversationally instead of requiring hand-edited shell env vars (closes the GUI gap with the Desktop `.mcpb` path)
+
+## Cloud connector (`cloud/`) — in progress, not yet deployed
+
+`mcp.wpistic.cloud`: a hosted, multi-tenant MCP relay so connecting is "paste
+one URL, approve in your own WP admin" — no local server, no Node.js, no
+copy-pasted secrets. The WordPress side (a small OAuth 2.1 authorization
+server, `includes/class-oauth.php` + the hidden consent screen) and the
+Cloudflare Worker (`cloud/`, built on `agents/mcp` +
+`@cloudflare/workers-oauth-provider`) are both written and pass their local
+checks (PHP lint, `tsc --noEmit`, a real `wrangler deploy --dry-run` build),
+but neither has been deployed or tested against live infrastructure yet.
+Not linked from the Claude Setup wizard until that happens. See `cloud/README.md`
+for exact deployment steps and the security review this needs before any
+public rollout.
 
 ## Later (1.x)
 
@@ -32,10 +47,10 @@ What's planned for this repository. SaaS plans live elsewhere; this roadmap only
 - Multisite network admin support
 - More built-in manual playbooks (community-suggested, safety-reviewed)
 - Optional webhook notifications for pending approvals (email/Slack)
+- Extend the cloud connector's one-URL, OAuth-based connect flow to other MCP-capable AI clients beyond Claude
 
 ## Explicit non-goals for this repo
 
-- Remote/cloud MCP connector (SaaS)
 - AI skills marketplace and SEO/AIO/Schema skills (SaaS)
 - Billing, team permissions, white-label, agency dashboards (SaaS)
 

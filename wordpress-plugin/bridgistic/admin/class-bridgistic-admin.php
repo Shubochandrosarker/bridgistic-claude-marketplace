@@ -35,6 +35,7 @@ require_once __DIR__ . '/class-bridgistic-playbooks-page.php';
 require_once __DIR__ . '/class-bridgistic-export-page.php';
 require_once __DIR__ . '/class-bridgistic-premium-page.php';
 require_once __DIR__ . '/class-bridgistic-settings-page.php';
+require_once __DIR__ . '/class-bridgistic-oauth-page.php';
 
 final class Controller {
 
@@ -82,6 +83,10 @@ final class Controller {
 		foreach ( self::pages() as $slug => $page ) {
 			add_submenu_page( 'bridgistic', 'Bridgistic — ' . $page[0], $page[0], self::CAP, $slug, array( $this, 'render' ) );
 		}
+
+		// Hidden: reached only via a deep link from the cloud connector's OAuth
+		// redirect, never shown in the sidebar (null parent slug).
+		add_submenu_page( null, 'Connect Bridgistic Cloud', '', self::CAP, 'bridgistic-oauth-authorize', array( $this, 'render_oauth_authorize' ) );
 	}
 
 	/**
@@ -101,5 +106,17 @@ final class Controller {
 		$class = $pages[ $slug ][1];
 		$page  = new $class( $slug, $pages[ $slug ][0] );
 		$page->render();
+	}
+
+	/**
+	 * The OAuth consent screen isn't in pages() (it's hidden from the nav
+	 * and renders its own standalone HTML, not the shared dashboard shell),
+	 * so it gets its own capability-gated entry point.
+	 */
+	public function render_oauth_authorize(): void {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_die( esc_html__( 'Not allowed.', 'bridgistic' ) );
+		}
+		( new OAuthAuthorizePage( 'bridgistic-oauth-authorize', 'Connect Bridgistic Cloud' ) )->render();
 	}
 }
