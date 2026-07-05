@@ -35,25 +35,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</header>
 		<div class="bridgistic-step-body">
 			<div class="bridgistic-choice-grid" role="radiogroup" aria-label="<?php esc_attr_e( 'Connection type', 'bridgistic' ); ?>">
-				<button type="button" class="bridgistic-choice is-selected" data-connection="desktop">
+				<button type="button" class="bridgistic-choice is-selected" data-connection="extension">
+					<?php echo Page::icon( 'sparkle', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<strong><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?> <?php echo Page::badge( 'pass', __( 'Recommended — no install', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></strong>
+					<span><?php esc_html_e( 'Download .mcpb, double-click, paste three values. No terminal, no config files, no Node.js.', 'bridgistic' ); ?></span>
+				</button>
+				<button type="button" class="bridgistic-choice" data-connection="desktop">
 					<?php echo Page::icon( 'desktop', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<strong><?php esc_html_e( 'Claude Desktop', 'bridgistic' ); ?></strong>
-					<span><?php esc_html_e( 'Local config file, best for most users.', 'bridgistic' ); ?></span>
+					<strong><?php esc_html_e( 'Claude Desktop (manual)', 'bridgistic' ); ?></strong>
+					<span><?php esc_html_e( 'For advanced setups: hand-edit a local config file yourself.', 'bridgistic' ); ?></span>
 				</button>
 				<button type="button" class="bridgistic-choice" data-connection="code">
 					<?php echo Page::icon( 'code', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<strong><?php esc_html_e( 'Claude Code', 'bridgistic' ); ?></strong>
-					<span><?php esc_html_e( 'Terminal / IDE, installs via plugin marketplace.', 'bridgistic' ); ?></span>
+					<span><?php esc_html_e( 'Terminal / IDE, installs via plugin marketplace. Requires Node.js.', 'bridgistic' ); ?></span>
 				</button>
 				<button type="button" class="bridgistic-choice" data-connection="manual">
 					<?php echo Page::icon( 'gear', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<strong><?php esc_html_e( 'Manual MCP JSON', 'bridgistic' ); ?></strong>
-					<span><?php esc_html_e( 'Raw config for any MCP-compatible client.', 'bridgistic' ); ?></span>
-				</button>
-				<button type="button" class="bridgistic-choice" data-connection="extension">
-					<?php echo Page::icon( 'sparkle', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<strong><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?> <?php echo Page::badge( 'pass', __( 'One-click', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></strong>
-					<span><?php esc_html_e( 'Download .mcpb, double-click, paste three values. No config files.', 'bridgistic' ); ?></span>
+					<span><?php esc_html_e( 'Raw config for any other MCP-compatible client.', 'bridgistic' ); ?></span>
 				</button>
 			</div>
 			<div class="bridgistic-step-actions">
@@ -156,8 +156,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="bridgistic-step-body">
 
 			<div class="bridgistic-tabs" role="tablist">
-				<button type="button" class="bridgistic-tab is-active" data-config-tab="desktop" role="tab"><?php esc_html_e( 'Claude Desktop', 'bridgistic' ); ?></button>
-				<button type="button" class="bridgistic-tab" data-config-tab="extension" role="tab"><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?></button>
+				<button type="button" class="bridgistic-tab is-active" data-config-tab="extension" role="tab"><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?></button>
+				<button type="button" class="bridgistic-tab" data-config-tab="desktop" role="tab"><?php esc_html_e( 'Claude Desktop (manual)', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="code" role="tab"><?php esc_html_e( 'Claude Code', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="cli" role="tab"><?php esc_html_e( 'CLI command', 'bridgistic' ); ?></button>
 			</div>
