@@ -3,6 +3,46 @@
 All notable changes to the Bridgistic free public distribution.
 Format: [Keep a Changelog](https://keepachangelog.com/) · Versioning: [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+Multi-client, multi-site setup, and cloud connector hardening.
+
+### Added
+
+- **Codex CLI and Gemini CLI as first-class connection types** in the Claude Setup wizard (step 1
+  choices + step 4 config tabs), generating `~/.codex/config.toml` and `~/.gemini/settings.json`
+  snippets that launch the published `bridgistic-mcp-server` npm package via `npx` — no clone or
+  build step. `ConfigGenerator::codex()` / `ConfigGenerator::gemini_cli()`.
+- **Docs for connecting other AI clients**: `docs/CODEX_SETUP.md`, `docs/GEMINI_SETUP.md`,
+  `docs/CHATGPT_SETUP.md` (private beta, remote-only), and `docs/CONNECT_OTHER_AI.md` (a hub
+  covering both multi-client and multi-WordPress-site setups). Linked from the README and the
+  Claude Setup wizard.
+- **`cloud/` test suite** — 73 tests (`node --test`, zero new test-framework dependency besides
+  `tsx` for running TypeScript directly) covering tenant credential encryption, PKCE, the tenant
+  registry, D1 tenant storage, HMAC request signing, and the WordPress OAuth client. Wired into CI.
+- **`docs/CLOUD_CONNECTOR.md`** — live-status tracking for the `mcp.wpistic.cloud` deployment
+  (what's actually provisioned vs. what still needs manual confirmation) and the checklist before
+  it moves from private beta to generally available.
+- **`.github/workflows/deploy-cloud.yml`** — manual-dispatch CI workflow to redeploy the `cloud/`
+  Worker via `wrangler deploy`, gated on `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` repo
+  secrets (safe no-op until a repo admin adds them). Independent of `ci.yml`/`release.yml`.
+
+### Changed
+
+- `cloud/wrangler.toml` now has real Cloudflare resource IDs (D1 database, KV namespace) instead
+  of placeholders — the Worker, database, and KV namespace were already provisioned outside of
+  this repo's history; the committed config now matches the live deployment.
+- Fixed a stale `Plugin URI` in `bridgistic.php` that still pointed at the deprecated `bridgistic`
+  repo instead of `bridgistic-claude-marketplace`.
+
+### Notes
+
+- The `mcp.wpistic.cloud` cloud connector remains a **private beta**: not linked from the Claude
+  Setup wizard, not announced. `docs/FREE_VS_PAID.md`'s free-vs-paid classification for the remote
+  connector is unchanged and still pending a decision — see `docs/CLOUD_CONNECTOR.md`.
+- Multi-site support (`BRIDGISTIC_CONNECTIONS`) is unchanged in behavior; it's now documented in
+  one place (`docs/CONNECT_OTHER_AI.md`) instead of being scattered across per-client docs.
+
 ## [1.1.1] — 2026-07-04
 
 Patch: corrected MCP Registry namespace casing (io.github.Shubochandrosarker) in the npm package metadata so registry ownership validation passes. No functional changes.

@@ -8,8 +8,11 @@ secrets.
 
 ## Status
 
-**Not yet deployed. Built and locally verified, not tested against live
-infrastructure.** Before this goes live to real users it needs, in order:
+**Deployed as a private beta — not linked from the plugin UI, not publicly
+announced.** See [`docs/CLOUD_CONNECTOR.md`](../docs/CLOUD_CONNECTOR.md) for
+exactly what's live, what a maintainer still needs to confirm by hand
+(secret, DNS route), and the checklist before this goes from "private beta"
+to generally available. Summary of what's left, in order:
 
 1. A real deployment (see below) tested end-to-end against a real WordPress
    site and a real MCP client (Claude Desktop's "Add custom connector", or

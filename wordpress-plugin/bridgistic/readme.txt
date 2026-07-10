@@ -8,11 +8,11 @@ Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Free local MCP bridge for Claude: connect Claude Desktop and Claude Code to WordPress with signed requests, scoped keys, approvals, audit logs, and snapshots.
+Free local MCP bridge: connect Claude, OpenAI Codex CLI, or Gemini CLI to WordPress with signed requests, scoped keys, approvals, audit logs, and snapshots.
 
 == Description ==
 
-Bridgistic is the WordPress side of an MCP (Model Context Protocol) bridge. It lets an AI agent — Claude, Claude Cowork, or any MCP client — operate a real WordPress site safely, instead of handing over a full-admin Application Password and hoping for the best.
+Bridgistic is the WordPress side of an MCP (Model Context Protocol) bridge. It lets an AI agent — Claude, Claude Cowork, OpenAI Codex, Gemini CLI, or any other MCP client — operate a real WordPress site safely, instead of handing over a full-admin Application Password and hoping for the best.
 
 Every request is HMAC-signed and tied to a least-privilege key. Destructive actions can be previewed (dry-run), held for human approval, and are snapshotted first so any change is one call away from a rollback. Usage is metered per key, and playbooks can run unattended on a schedule.
 

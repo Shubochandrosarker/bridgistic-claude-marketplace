@@ -50,12 +50,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<strong><?php esc_html_e( 'Claude Code', 'bridgistic' ); ?></strong>
 					<span><?php esc_html_e( 'Terminal / IDE, installs via plugin marketplace. Requires Node.js.', 'bridgistic' ); ?></span>
 				</button>
+				<button type="button" class="bridgistic-choice" data-connection="codex">
+					<?php echo Page::icon( 'bolt', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<strong><?php esc_html_e( 'OpenAI Codex CLI', 'bridgistic' ); ?></strong>
+					<span><?php esc_html_e( 'Terminal. Uses the published npm package — nothing to clone or build.', 'bridgistic' ); ?></span>
+				</button>
+				<button type="button" class="bridgistic-choice" data-connection="gemini">
+					<?php echo Page::icon( 'globe', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<strong><?php esc_html_e( 'Gemini CLI', 'bridgistic' ); ?></strong>
+					<span><?php esc_html_e( 'Terminal. Uses the published npm package — nothing to clone or build.', 'bridgistic' ); ?></span>
+				</button>
 				<button type="button" class="bridgistic-choice" data-connection="manual">
 					<?php echo Page::icon( 'gear', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<strong><?php esc_html_e( 'Manual MCP JSON', 'bridgistic' ); ?></strong>
-					<span><?php esc_html_e( 'Raw config for any other MCP-compatible client.', 'bridgistic' ); ?></span>
+					<span><?php esc_html_e( 'Raw config for ChatGPT or any other MCP-compatible client.', 'bridgistic' ); ?></span>
 				</button>
 			</div>
+			<p class="bridgistic-help is-muted">
+				<?php
+				printf(
+					/* translators: %s: link to the ChatGPT connector guide. */
+					esc_html__( 'Connecting more than one WordPress site, or want ChatGPT? See %s.', 'bridgistic' ),
+					'<a href="https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/blob/main/docs/CONNECT_OTHER_AI.md" target="_blank" rel="noopener noreferrer">' . esc_html__( 'multi-site &amp; other AI clients', 'bridgistic' ) . '</a>'
+				); // phpcs:ignore WordPress.Security.EscapeOutput
+				?>
+			</p>
 			<div class="bridgistic-step-actions">
 				<button type="button" class="bridgistic-button is-primary" data-step-next="2"><?php esc_html_e( 'Continue', 'bridgistic' ); ?></button>
 			</div>
@@ -159,6 +178,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<button type="button" class="bridgistic-tab is-active" data-config-tab="extension" role="tab"><?php esc_html_e( 'Desktop Extension', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="desktop" role="tab"><?php esc_html_e( 'Claude Desktop (manual)', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="code" role="tab"><?php esc_html_e( 'Claude Code', 'bridgistic' ); ?></button>
+				<button type="button" class="bridgistic-tab" data-config-tab="codex" role="tab"><?php esc_html_e( 'Codex CLI', 'bridgistic' ); ?></button>
+				<button type="button" class="bridgistic-tab" data-config-tab="gemini" role="tab"><?php esc_html_e( 'Gemini CLI', 'bridgistic' ); ?></button>
 				<button type="button" class="bridgistic-tab" data-config-tab="cli" role="tab"><?php esc_html_e( 'CLI command', 'bridgistic' ); ?></button>
 			</div>
 
@@ -188,9 +209,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<p class="bridgistic-help"><?php esc_html_e( 'Then export the environment variables, or save this as .mcp.json in your project:', 'bridgistic' ); ?></p>
 				<pre class="bridgistic-code" id="bridgistic-config-code"></pre>
 			</div>
+			<div data-config-panel="codex" hidden>
+				<p class="bridgistic-help">
+					<?php esc_html_e( 'Add this block to your Codex config, then restart Codex. Config location:', 'bridgistic' ); ?>
+					<code>~/.codex/config.toml</code>
+				</p>
+				<pre class="bridgistic-code" id="bridgistic-config-codex"></pre>
+			</div>
+			<div data-config-panel="gemini" hidden>
+				<p class="bridgistic-help">
+					<?php esc_html_e( 'Merge this into your Gemini CLI settings, then restart Gemini CLI. Config location:', 'bridgistic' ); ?>
+					<code>~/.gemini/settings.json</code>
+				</p>
+				<pre class="bridgistic-code" id="bridgistic-config-gemini"></pre>
+			</div>
 			<div data-config-panel="cli" hidden>
 				<p class="bridgistic-help"><?php esc_html_e( 'One-liner for claude mcp add (fill in the real server path):', 'bridgistic' ); ?></p>
 				<pre class="bridgistic-code" id="bridgistic-config-cli"></pre>
+				<p class="bridgistic-help">
+					<?php
+					printf(
+						/* translators: %s: link to the ChatGPT connector guide. */
+						esc_html__( 'ChatGPT connects only through a hosted remote server (it cannot run a local one like this). Bridgistic\'s hosted connector is in private beta — see %s for status and how to request access.', 'bridgistic' ),
+						'<a href="https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/blob/main/docs/CHATGPT_SETUP.md" target="_blank" rel="noopener noreferrer">' . esc_html__( 'the ChatGPT connector guide', 'bridgistic' ) . '</a>'
+					); // phpcs:ignore WordPress.Security.EscapeOutput
+					?>
+				</p>
 			</div>
 
 			<p class="bridgistic-help is-muted">

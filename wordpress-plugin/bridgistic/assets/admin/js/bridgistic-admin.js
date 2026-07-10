@@ -283,7 +283,7 @@
 			if ( ! state.configs ) {
 				return;
 			}
-			[ 'desktop', 'code', 'cli', 'extension' ].forEach( function ( key ) {
+			[ 'desktop', 'code', 'cli', 'extension', 'codex', 'gemini' ].forEach( function ( key ) {
 				var node = $( '#bridgistic-config-' + key );
 				if ( node && state.configs[ key ] ) {
 					node.textContent = state.configs[ key ];
@@ -303,6 +303,10 @@
 		var syncConfigTabs = function () {
 			if ( state.connection === 'code' ) {
 				showConfigTab( 'code' );
+			} else if ( state.connection === 'codex' ) {
+				showConfigTab( 'codex' );
+			} else if ( state.connection === 'gemini' ) {
+				showConfigTab( 'gemini' );
 			} else if ( state.connection === 'manual' ) {
 				showConfigTab( 'cli' );
 			} else if ( state.connection === 'extension' ) {
@@ -341,11 +345,13 @@
 				if ( ! state.configs ) {
 					return;
 				}
-				var isCode = state.connection === 'code';
-				downloadJson(
-					isCode ? 'claude_code_config.json' : 'claude_desktop_config.json',
-					isCode ? state.configs.code : state.configs.desktop
-				);
+				var downloadMap = {
+					code: [ 'claude_code_config.json', state.configs.code ],
+					codex: [ 'config.toml', state.configs.codex ],
+					gemini: [ 'settings.json', state.configs.gemini ]
+				};
+				var picked = downloadMap[ state.connection ] || [ 'claude_desktop_config.json', state.configs.desktop ];
+				downloadJson( picked[ 0 ], picked[ 1 ] );
 			} );
 		}
 

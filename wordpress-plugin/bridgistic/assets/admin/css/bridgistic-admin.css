@@ -454,7 +454,7 @@
 
 /* ---- choice cards --------------------------------------------------------------------------------- */
 
-.bridgistic-choice-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.bridgistic-choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .bridgistic-choice-grid.is-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .bridgistic-choice {
