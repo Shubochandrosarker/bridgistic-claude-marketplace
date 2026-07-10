@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Bridgistic
- * Plugin URI:        https://github.com/Shubochandrosarker/bridgistic
+ * Plugin URI:        https://github.com/Shubochandrosarker/bridgistic-claude-marketplace
  * Description:        Give Claude and Claude Cowork production-safe, scoped control of this WordPress site — HMAC-signed requests, least-privilege keys, dry-run and human approval on destructive ops, one-call rollback, full audit, usage metering, and scheduled playbooks.
  * Version:           1.1.1
  * Requires at least: 6.4

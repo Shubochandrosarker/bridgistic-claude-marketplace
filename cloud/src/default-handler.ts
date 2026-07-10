@@ -76,7 +76,8 @@ function siteUrlForm(flowId: string, error?: string): string {
 </div></body></html>`;
 }
 
-function cleanSiteUrl(raw: string): string | null {
+/** Exported for unit testing (see test/default-handler.test.ts) - behavior unchanged. */
+export function cleanSiteUrl(raw: string): string | null {
   try {
     const url = new URL(raw.trim());
     if (url.protocol !== "https:") return null;

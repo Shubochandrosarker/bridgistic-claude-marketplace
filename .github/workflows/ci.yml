@@ -21,6 +21,13 @@ jobs:
       - name: MCP server tests (contract + integration)
         run: npm test
 
+      - name: Cloud Worker tests (typecheck + unit tests)
+        run: |
+          cd cloud
+          npm install
+          npm run typecheck
+          npm test
+
       - name: Validate marketplace structure + secret scan
         run: npm run validate
 

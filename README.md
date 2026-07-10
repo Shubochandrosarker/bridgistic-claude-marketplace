@@ -6,6 +6,8 @@
 
 *Signed requests · scoped keys · approvals on destructive ops · audit logs · snapshots · local MCP setup*
 
+*Also works with [Codex CLI](docs/CODEX_SETUP.md), [Gemini CLI](docs/GEMINI_SETUP.md), and [ChatGPT (private beta)](docs/CHATGPT_SETUP.md) — Bridgistic speaks standard MCP, not just Claude's.*
+
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL_v2%2B-blue.svg)](LICENSE)
 [![WordPress 6.4+](https://img.shields.io/badge/WordPress-6.4%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org/)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933.svg?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -22,7 +24,7 @@
 Bridgistic is a safe bridge between Claude and your WordPress site. Instead of handing an AI a full-admin Application Password, you mint a **scoped key** in WordPress and run a **local MCP server** that signs every request with it. The WordPress plugin verifies the signature, enforces the key's scopes, queues destructive operations for human approval, snapshots before risky writes, and logs everything.
 
 ```
-Claude Desktop / Claude Code
+Claude Desktop / Claude Code / Codex CLI / Gemini CLI
         │  (MCP, local)
         ▼
 Bridgistic MCP server  ──  HMAC-signed HTTPS  ──▶  WordPress plugin
@@ -114,6 +116,10 @@ Add this to your Claude Desktop config (macOS: `~/Library/Application Support/Cl
 ```
 
 Restart Claude Desktop. Details: [docs/CLAUDE_DESKTOP.md](docs/CLAUDE_DESKTOP.md). The **Bridgistic → Claude Setup** page also generates this config for you, and **Bridgistic → Export Package** downloads it as a ready-made zip.
+
+### 3d. Or connect Codex, Gemini CLI, or ChatGPT
+
+The same **Bridgistic → Claude Setup** wizard (despite the name) also generates ready-to-paste configs for **OpenAI Codex CLI** and **Gemini CLI** — pick them as the connection type on step 1. See [docs/CODEX_SETUP.md](docs/CODEX_SETUP.md) and [docs/GEMINI_SETUP.md](docs/GEMINI_SETUP.md). ChatGPT only supports remote connectors and needs Bridgistic's hosted cloud connector, currently a private beta — see [docs/CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Managing more than one WordPress site from the same client (any of them)? See [docs/CONNECT_OTHER_AI.md](docs/CONNECT_OTHER_AI.md).
 
 ### 4. Test the connection
 

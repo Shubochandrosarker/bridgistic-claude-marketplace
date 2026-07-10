@@ -80,6 +80,46 @@ final class ConfigGenerator {
 	}
 
 	/**
+	 * OpenAI Codex CLI config — `[mcp_servers.bridgistic]` block for
+	 * `~/.codex/config.toml` (project-local `.codex/config.toml` also works
+	 * for trusted projects). Uses the published `bridgistic-mcp-server` npm
+	 * package via `npx`, so there's nothing to clone or build first.
+	 */
+	public static function codex( string $key_id, ?string $secret = null ): string {
+		$secret = $secret ?: self::SECRET_PLACEHOLDER;
+		return sprintf(
+			"[mcp_servers.bridgistic]\ncommand = \"npx\"\nargs = [\"-y\", \"bridgistic-mcp-server\"]\nenv = { BRIDGISTIC_SITE_URL = %s, BRIDGISTIC_KEY_ID = %s, BRIDGISTIC_KEY_SECRET = %s }\n",
+			self::toml_string( home_url() ),
+			self::toml_string( $key_id ),
+			self::toml_string( $secret )
+		);
+	}
+
+	/**
+	 * Gemini CLI config — `mcpServers` entry for `~/.gemini/settings.json`
+	 * (or a project-local `.gemini/settings.json`). Same npx-based launch
+	 * as the Codex config.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function gemini_cli( string $key_id, ?string $secret = null ): array {
+		return array(
+			'mcpServers' => array(
+				'bridgistic' => array(
+					'command' => 'npx',
+					'args'    => array( '-y', 'bridgistic-mcp-server' ),
+					'env'     => self::env_block( $key_id, $secret ),
+				),
+			),
+		);
+	}
+
+	/** Quote + escape a value for a TOML basic string. */
+	private static function toml_string( string $value ): string {
+		return '"' . str_replace( array( '\\', '"' ), array( '\\\\', '\\"' ), $value ) . '"';
+	}
+
+	/**
 	 * @return array<string,string>
 	 */
 	private static function env_block( string $key_id, ?string $secret ): array {

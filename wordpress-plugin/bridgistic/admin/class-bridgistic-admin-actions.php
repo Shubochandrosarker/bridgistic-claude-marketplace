@@ -350,6 +350,8 @@ final class Actions {
 				'code'      => ConfigGenerator::to_json( ConfigGenerator::code( $key_id, $secret ) ),
 				'cli'       => ConfigGenerator::code_cli( $key_id, $secret ),
 				'extension' => ConfigGenerator::extension_values( $key_id, $secret ),
+				'codex'     => ConfigGenerator::codex( $key_id, $secret ),
+				'gemini'    => ConfigGenerator::to_json( ConfigGenerator::gemini_cli( $key_id, $secret ) ),
 			),
 		);
 	}
