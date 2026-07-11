@@ -2,38 +2,13 @@
  * Bridgistic admin — WordPressistic design system.
  *
  * Scoped under .bridgistic-admin so nothing leaks into wp-admin.
- * Theme: dark by default (brand), light via [data-bridgistic-theme="light"]
+ * Theme: light by default, dark via [data-bridgistic-theme="dark"]
  * on <html> (toggle persists in localStorage) or OS preference fallback.
  */
 
 /* ---- tokens ---------------------------------------------------------------- */
 
 .bridgistic-admin {
-	--bz-bg: #101918;
-	--bz-bg-2: #172321;
-	--bz-card: #1e2d2a;
-	--bz-card-hover: #233531;
-	--bz-accent: #00ff85;
-	--bz-accent-soft: #86dbb8;
-	--bz-accent-ink: #052013;
-	--bz-border: rgba(134, 219, 184, 0.18);
-	--bz-border-strong: rgba(134, 219, 184, 0.42);
-	--bz-text: #f4fff9;
-	--bz-text-2: #b8c9c3;
-	--bz-warn: #fbbf24;
-	--bz-danger: #ef4444;
-	--bz-info: #38bdf8;
-	--bz-success: #22c55e;
-	--bz-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
-	--bz-shadow-lift: 0 12px 34px rgba(0, 0, 0, 0.38);
-	--bz-radius: 16px;
-	--bz-radius-sm: 10px;
-	--bz-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-	--bz-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-}
-
-/* Light theme — explicit toggle wins; OS preference as fallback. */
-:root[data-bridgistic-theme="light"] .bridgistic-admin {
 	--bz-bg: #f7faf9;
 	--bz-bg-2: #eef4f2;
 	--bz-card: #ffffff;
@@ -45,25 +20,50 @@
 	--bz-border-strong: #a9cfc0;
 	--bz-text: #12201e;
 	--bz-text-2: #4f6660;
+	--bz-warn: #fbbf24;
+	--bz-danger: #ef4444;
+	--bz-info: #38bdf8;
+	--bz-success: #22c55e;
 	--bz-shadow: 0 4px 18px rgba(18, 32, 30, 0.08);
 	--bz-shadow-lift: 0 10px 28px rgba(18, 32, 30, 0.14);
+	--bz-radius: 16px;
+	--bz-radius-sm: 10px;
+	--bz-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	--bz-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: light) {
+/* Dark theme — explicit toggle wins; OS preference as fallback. */
+:root[data-bridgistic-theme="dark"] .bridgistic-admin {
+	--bz-bg: #101918;
+	--bz-bg-2: #172321;
+	--bz-card: #1e2d2a;
+	--bz-card-hover: #233531;
+	--bz-accent: #00ff85;
+	--bz-accent-soft: #86dbb8;
+	--bz-accent-ink: #052013;
+	--bz-border: rgba(134, 219, 184, 0.18);
+	--bz-border-strong: rgba(134, 219, 184, 0.42);
+	--bz-text: #f4fff9;
+	--bz-text-2: #b8c9c3;
+	--bz-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+	--bz-shadow-lift: 0 12px 34px rgba(0, 0, 0, 0.38);
+}
+
+@media (prefers-color-scheme: dark) {
 	:root:not([data-bridgistic-theme]) .bridgistic-admin {
-		--bz-bg: #f7faf9;
-		--bz-bg-2: #eef4f2;
-		--bz-card: #ffffff;
-		--bz-card-hover: #f4faf7;
-		--bz-accent: #00b86b;
-		--bz-accent-soft: #0d8f58;
-		--bz-accent-ink: #ffffff;
-		--bz-border: #ddebe6;
-		--bz-border-strong: #a9cfc0;
-		--bz-text: #12201e;
-		--bz-text-2: #4f6660;
-		--bz-shadow: 0 4px 18px rgba(18, 32, 30, 0.08);
-		--bz-shadow-lift: 0 10px 28px rgba(18, 32, 30, 0.14);
+		--bz-bg: #101918;
+		--bz-bg-2: #172321;
+		--bz-card: #1e2d2a;
+		--bz-card-hover: #233531;
+		--bz-accent: #00ff85;
+		--bz-accent-soft: #86dbb8;
+		--bz-accent-ink: #052013;
+		--bz-border: rgba(134, 219, 184, 0.18);
+		--bz-border-strong: rgba(134, 219, 184, 0.42);
+		--bz-text: #f4fff9;
+		--bz-text-2: #b8c9c3;
+		--bz-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+		--bz-shadow-lift: 0 12px 34px rgba(0, 0, 0, 0.38);
 	}
 }
 
@@ -311,8 +311,8 @@
 .bridgistic-badge.is-fail { color: var(--bz-danger); background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); }
 .bridgistic-badge.is-info { color: var(--bz-info); background: rgba(56, 189, 248, 0.12); border-color: rgba(56, 189, 248, 0.35); }
 .bridgistic-badge.is-muted { color: var(--bz-text-2); background: var(--bz-bg-2); border-color: var(--bz-border); }
-.bridgistic-badge.is-accent { color: var(--bz-accent); background: rgba(0, 255, 133, 0.1); border-color: rgba(0, 255, 133, 0.35); }
-:root[data-bridgistic-theme="light"] .bridgistic-admin .bridgistic-badge.is-accent { color: var(--bz-accent-soft); }
+.bridgistic-badge.is-accent { color: var(--bz-accent-soft); background: rgba(0, 255, 133, 0.1); border-color: rgba(0, 255, 133, 0.35); }
+:root[data-bridgistic-theme="dark"] .bridgistic-admin .bridgistic-badge.is-accent { color: var(--bz-accent); }
 
 .bridgistic-badge.is-scope { font-family: var(--bz-mono); font-weight: 500; color: var(--bz-accent-soft); background: var(--bz-bg-2); border-color: var(--bz-border); }
 .bridgistic-badge.is-scope.is-warn { color: var(--bz-warn); border-color: rgba(251, 191, 36, 0.4); }
@@ -682,10 +682,10 @@
 	gap: 7px;
 	text-align: center;
 	padding: 18px;
-	background: linear-gradient(180deg, transparent, rgba(16, 25, 24, 0.25));
+	background: linear-gradient(180deg, transparent, rgba(247, 250, 249, 0.35));
 	color: var(--bz-text);
 }
-:root[data-bridgistic-theme="light"] .bridgistic-admin .bridgistic-locked-overlay { background: linear-gradient(180deg, transparent, rgba(247, 250, 249, 0.35)); }
+:root[data-bridgistic-theme="dark"] .bridgistic-admin .bridgistic-locked-overlay { background: linear-gradient(180deg, transparent, rgba(16, 25, 24, 0.25)); }
 .bridgistic-locked-overlay > svg { color: var(--bz-accent-soft); }
 .bridgistic-locked-overlay h3 { display: flex; align-items: center; gap: 6px; font-size: 13.5px; margin: 0; }
 .bridgistic-locked-overlay p { font-size: 12px; color: var(--bz-text-2); margin: 0; max-width: 300px; }

@@ -50,6 +50,10 @@ The free version is the complete local bridge. These belong to **Bridgistic SaaS
 
 ## Quick start
 
+**New here? Read [docs/CONNECT_BRIDGISTIC.md](docs/CONNECT_BRIDGISTIC.md) instead** — one
+step-by-step guide covering install → key → connect → verify → troubleshooting, written for
+non-technical site owners. The steps below are the same flow in short form.
+
 ### 1. Install the WordPress plugin
 
 Download `bridgistic-wordpress-plugin.zip` from [Releases](https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases) (or build it: `npm install && npm run build && npm run package`), then upload via **WP Admin → Plugins → Add New → Upload** and activate. Details: [docs/WORDPRESS_SETUP.md](docs/WORDPRESS_SETUP.md).
