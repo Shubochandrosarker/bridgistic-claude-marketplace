@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <header class="bridgistic-page-head bridgistic-fade-in">
 	<h1><?php esc_html_e( 'Claude Setup', 'bridgistic' ); ?></h1>
 	<p><?php esc_html_e( 'Connect Claude to WordPress safely — pick a connection type, choose what Claude is allowed to do, and copy a ready-made config.', 'bridgistic' ); ?></p>
+	<p class="bridgistic-help is-muted"><?php esc_html_e( 'Despite the name, this wizard also configures Codex CLI, Gemini CLI, and any other MCP-compatible client — pick your client on Step 1. Looking for the hosted cloud connector instead (e.g. for ChatGPT)? See Bridgistic Cloud in the sidebar.', 'bridgistic' ); ?></p>
 </header>
 
 <div class="bridgistic-stepper bridgistic-fade-in" id="bridgistic-setup" data-step="1">

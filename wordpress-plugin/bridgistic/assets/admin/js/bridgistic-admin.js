@@ -43,6 +43,11 @@
 		}, 3500 );
 	}
 
+	// Classifies a failure so the user sees something actionable instead of a
+	// raw browser/parse error — a WAF or security plugin blocking
+	// /wp-admin/admin-ajax.php (common on managed hosts) returns an HTML
+	// error page, which used to surface as a cryptic "Unexpected token '<'"
+	// message; this names the likely cause and points at Health Check instead.
 	function post( action, fields ) {
 		var body = new FormData();
 		body.append( 'action', action );
@@ -52,15 +57,34 @@
 		} );
 		return window
 			.fetch( cfg.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
-			.then( function ( res ) {
-				return res.json();
+			.catch( function () {
+				throw new Error( i18n.networkError || 'Could not reach the server. Check your internet connection and that this site is online.' );
 			} )
-			.then( function ( json ) {
-				if ( ! json || json.success !== true ) {
-					var message = json && json.data && json.data.message ? json.data.message : i18n.error || 'Error';
-					throw new Error( message );
-				}
-				return json.data;
+			.then( function ( res ) {
+				return res.text().then( function ( raw ) {
+					var json = null;
+					if ( raw ) {
+						try {
+							json = JSON.parse( raw );
+						} catch ( err ) {
+							json = null;
+						}
+					}
+					if ( ! json ) {
+						var reason = res.ok
+							? i18n.badResponse || 'The server returned an unexpected response instead of JSON. Try again, or check Bridgistic → Health Check.'
+							: ( i18n.blockedResponse || 'A security plugin, firewall, or proxy may be blocking this request (got HTTP %d instead of JSON). Check Bridgistic → Health Check.' ).replace(
+									'%d',
+									String( res.status )
+							  );
+						throw new Error( reason );
+					}
+					if ( json.success !== true ) {
+						var message = json.data && json.data.message ? json.data.message : i18n.error || 'Something went wrong. Check the Health page.';
+						throw new Error( message );
+					}
+					return json.data;
+				} );
 			} );
 	}
 
@@ -499,6 +523,229 @@
 		};
 
 		syncConfigTabs();
+	}
+
+	// ---- Dashboard: live connection status ----------------------------------------------
+
+	var heroStatus = $( '#bridgistic-hero-status' );
+	if ( heroStatus ) {
+		var badgeEl = function ( kind, text, pulse ) {
+			var span = document.createElement( 'span' );
+			span.className = 'bridgistic-badge is-' + kind + ( pulse ? ' is-pulse' : '' );
+			span.textContent = text;
+			return span;
+		};
+
+		var wasConnected = !! $( '.bridgistic-badge.is-pass', heroStatus );
+		var dashboardPollTimer = null;
+
+		var renderDashboardStatus = function ( data ) {
+			heroStatus.innerHTML = '';
+			heroStatus.appendChild( badgeEl( data.statusKind, data.statusLabel, data.connected ) );
+			var note = document.createElement( 'span' );
+			note.className = 'bridgistic-hero-status-note';
+			note.textContent = data.statusNote;
+			heroStatus.appendChild( note );
+
+			var connectionBadge = $( '#bridgistic-connection-badge' );
+			if ( connectionBadge ) {
+				connectionBadge.innerHTML = '';
+				connectionBadge.appendChild( badgeEl( data.connected ? 'pass' : 'muted', data.connected ? ( i18n.connectedShort || 'Connected' ) : ( i18n.notConnectedShort || 'Not connected' ) ) );
+			}
+
+			var auditCount = $( '#bridgistic-audit-count' );
+			if ( auditCount ) {
+				auditCount.textContent = data.auditCount;
+			}
+			var latestLog = $( '#bridgistic-latest-log' );
+			if ( latestLog ) {
+				latestLog.textContent = data.latestLogText || i18n.noActivity || 'No MCP activity yet.';
+			}
+
+			if ( data.connected && ! wasConnected ) {
+				toast( i18n.dashboardJustConnected || 'Bridgistic just connected — a request came in from your AI client.', 'success' );
+			}
+			wasConnected = data.connected;
+		};
+
+		var pollDashboardOnce = function () {
+			if ( document.visibilityState === 'hidden' ) {
+				return;
+			}
+			post( 'bridgistic_dashboard_status', {} ).then( renderDashboardStatus ).catch( function () {
+				// Transient network errors shouldn't spam the dashboard; just try again next tick.
+			} );
+		};
+
+		dashboardPollTimer = window.setInterval( pollDashboardOnce, 15000 );
+		document.addEventListener( 'visibilitychange', function () {
+			if ( document.visibilityState === 'visible' ) {
+				pollDashboardOnce();
+			}
+		} );
+		window.addEventListener( 'beforeunload', function () {
+			if ( dashboardPollTimer ) {
+				window.clearInterval( dashboardPollTimer );
+			}
+		} );
+	}
+
+	// ---- Multi-Site: connections.json builder --------------------------------------------
+
+	var msOthers = $( '#bridgistic-ms-others' );
+	if ( msOthers ) {
+		var MS_STORAGE_KEY = 'bridgistic-ms-sites';
+		var msTemplate = $( '#bridgistic-ms-row-template' );
+		var msEmptyHint = $( '#bridgistic-ms-empty' );
+		var msJsonOut = $( '#bridgistic-ms-json' );
+
+		var msLoadSaved = function () {
+			try {
+				var raw = window.localStorage.getItem( MS_STORAGE_KEY );
+				return raw ? JSON.parse( raw ) : [];
+			} catch ( err ) {
+				return [];
+			}
+		};
+
+		// Structural fields only (alias/siteUrl/keyId) — secrets are never persisted here.
+		var msSaveStructural = function () {
+			var rows = $$( '[data-ms-row]', msOthers ).map( function ( row ) {
+				return {
+					alias: $( '[data-ms-field="alias"]', row ).value,
+					siteUrl: $( '[data-ms-field="siteUrl"]', row ).value,
+					keyId: $( '[data-ms-field="keyId"]', row ).value,
+				};
+			} );
+			try {
+				window.localStorage.setItem( MS_STORAGE_KEY, JSON.stringify( rows ) );
+			} catch ( err ) {
+				/* storage unavailable — rows just won't persist across reloads */
+			}
+		};
+
+		var msUpdateEmptyHint = function () {
+			if ( msEmptyHint ) {
+				msEmptyHint.hidden = msOthers.children.length > 0;
+			}
+		};
+
+		var msComputeJson = function () {
+			var out = {};
+
+			var thisAlias = ( $( '#bridgistic-ms-this-alias' ) || {} ).value || '';
+			if ( thisAlias.trim() ) {
+				out[ thisAlias.trim() ] = {
+					siteUrl: ( $( '#bridgistic-ms-this-site-url' ) || {} ).value || '',
+					keyId: ( $( '#bridgistic-ms-this-key' ) || {} ).value || '',
+					secret: ( $( '#bridgistic-ms-this-secret' ) || {} ).value || 'PASTE_YOUR_SECRET_HERE',
+				};
+			}
+
+			$$( '[data-ms-row]', msOthers ).forEach( function ( row ) {
+				var alias = $( '[data-ms-field="alias"]', row ).value.trim();
+				if ( ! alias ) {
+					return;
+				}
+				out[ alias ] = {
+					siteUrl: $( '[data-ms-field="siteUrl"]', row ).value,
+					keyId: $( '[data-ms-field="keyId"]', row ).value,
+					secret: $( '[data-ms-field="secret"]', row ).value || 'PASTE_YOUR_SECRET_HERE',
+				};
+			} );
+
+			if ( msJsonOut ) {
+				msJsonOut.textContent = JSON.stringify( out, null, 2 );
+			}
+		};
+
+		var msAddRow = function ( prefill ) {
+			if ( ! msTemplate || ! msTemplate.content ) {
+				return;
+			}
+			var node = msTemplate.content.firstElementChild.cloneNode( true );
+			if ( prefill ) {
+				[ 'alias', 'siteUrl', 'keyId' ].forEach( function ( field ) {
+					if ( prefill[ field ] ) {
+						$( '[data-ms-field="' + field + '"]', node ).value = prefill[ field ];
+					}
+				} );
+			}
+			msOthers.appendChild( node );
+			msUpdateEmptyHint();
+			msComputeJson();
+		};
+
+		msOthers.addEventListener( 'click', function ( event ) {
+			var remove = event.target.closest( '[data-ms-remove]' );
+			if ( remove ) {
+				var row = remove.closest( '[data-ms-row]' );
+				if ( row ) {
+					row.remove();
+					msUpdateEmptyHint();
+					msComputeJson();
+					msSaveStructural();
+				}
+			}
+		} );
+
+		msOthers.addEventListener( 'input', function () {
+			msComputeJson();
+			msSaveStructural();
+		} );
+
+		var addButton = $( '#bridgistic-ms-add' );
+		if ( addButton ) {
+			addButton.addEventListener( 'click', function () {
+				msAddRow( null );
+				msSaveStructural();
+			} );
+		}
+
+		var thisKeySelect = $( '#bridgistic-ms-this-key' );
+		var syncThisSecret = function () {
+			var secretField = $( '#bridgistic-ms-this-secret' );
+			if ( ! thisKeySelect || ! secretField ) {
+				return;
+			}
+			var freshKeyId = thisKeySelect.getAttribute( 'data-fresh-key-id' );
+			var freshSecret = thisKeySelect.getAttribute( 'data-fresh-secret' );
+			secretField.value = freshKeyId && freshKeyId === thisKeySelect.value ? freshSecret : '';
+			msComputeJson();
+		};
+		if ( thisKeySelect ) {
+			thisKeySelect.addEventListener( 'change', syncThisSecret );
+			syncThisSecret();
+		}
+
+		[ '#bridgistic-ms-this-alias', '#bridgistic-ms-this-secret' ].forEach( function ( sel ) {
+			var el = $( sel );
+			if ( el ) {
+				el.addEventListener( 'input', msComputeJson );
+			}
+		} );
+
+		var msCopy = $( '#bridgistic-ms-copy' );
+		if ( msCopy ) {
+			msCopy.addEventListener( 'click', function () {
+				copyText( msJsonOut ? msJsonOut.textContent : '' ).then( function () {
+					toast( i18n.copied || 'Copied', 'success' );
+				} );
+			} );
+		}
+
+		var msDownload = $( '#bridgistic-ms-download' );
+		if ( msDownload ) {
+			msDownload.addEventListener( 'click', function () {
+				downloadJson( 'connections.json', msJsonOut ? msJsonOut.textContent : '{}' );
+			} );
+		}
+
+		msLoadSaved().forEach( function ( saved ) {
+			msAddRow( saved );
+		} );
+		msUpdateEmptyHint();
+		msComputeJson();
 	}
 
 	// ---- Keys page: rotate / get config / ajax revoke -------------------------------------

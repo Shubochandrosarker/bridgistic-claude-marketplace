@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</a>
 		</div>
 	</div>
-	<div class="bridgistic-hero-status">
+	<div class="bridgistic-hero-status" id="bridgistic-hero-status" data-poll-dashboard>
 		<?php if ( $data['connected'] ) : ?>
 			<?php echo Page::badge( 'pass', __( 'Connected', 'bridgistic' ), true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<span class="bridgistic-hero-status-note"><?php echo esc_html( sprintf( __( 'Last MCP request %s', 'bridgistic' ), Page::ago( $data['last_used'] ) ) ); ?></span>
@@ -55,7 +55,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php echo Page::icon( 'plug' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<h3><?php esc_html_e( 'Claude Connection', 'bridgistic' ); ?></h3>
 		</header>
-		<p class="bridgistic-stat">
+		<p class="bridgistic-stat" id="bridgistic-connection-badge">
 			<?php echo $data['connected'] ? Page::badge( 'pass', __( 'Connected', 'bridgistic' ) ) : Page::badge( 'muted', __( 'Not connected', 'bridgistic' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		</p>
 		<p class="bridgistic-card-desc"><?php esc_html_e( 'Local MCP server signs every request with your scoped key.', 'bridgistic' ); ?></p>
@@ -91,8 +91,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php echo Page::icon( 'list' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<h3><?php esc_html_e( 'Activity', 'bridgistic' ); ?></h3>
 		</header>
-		<p class="bridgistic-stat"><span class="bridgistic-stat-number"><?php echo esc_html( number_format_i18n( (int) $data['audit_count'] ) ); ?></span> <?php esc_html_e( 'logged actions', 'bridgistic' ); ?></p>
-		<p class="bridgistic-card-desc">
+		<p class="bridgistic-stat"><span class="bridgistic-stat-number" id="bridgistic-audit-count"><?php echo esc_html( number_format_i18n( (int) $data['audit_count'] ) ); ?></span> <?php esc_html_e( 'logged actions', 'bridgistic' ); ?></p>
+		<p class="bridgistic-card-desc" id="bridgistic-latest-log">
 			<?php if ( $data['latest_log'] ) : ?>
 				<?php echo esc_html( sprintf( __( 'Latest: %1$s (%2$s)', 'bridgistic' ), (string) $data['latest_log']['action'], Page::ago( (string) $data['latest_log']['created_at'] ) ) ); ?>
 			<?php else : ?>

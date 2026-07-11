@@ -49,6 +49,35 @@ Multi-client, multi-site setup, and cloud connector hardening.
   (install → key → connect → verify → troubleshoot → FAQ) consolidating what was previously spread
   across `INSTALL.md`, `WORDPRESS_SETUP.md`, `CLAUDE_DESKTOP.md`, `CONNECT_OTHER_AI.md`, and
   `CLOUD_CONNECTOR.md`. Linked from the README.
+- **Live dashboard connection status** — the "Connected" badge, activity count, and latest-log line
+  now poll every 15s (`bridgistic_dashboard_status`) instead of only reflecting the state at page
+  load, and toast when a request lands while the tab is open (`DashboardPage::live_stats()`).
+- **Categorized AJAX error messages** — the shared `post()` JS helper now distinguishes a network
+  failure, a non-JSON response (the common signature of a WAF/security plugin/proxy blocking
+  `admin-ajax.php`), and an HTTP error status, instead of surfacing whatever the browser's JSON
+  parser happened to throw. Every AJAX call across the dashboard benefits automatically.
+- **Claude Setup step 5 split into "1. Server check" / "2. Client check"** — the client check is new:
+  it polls until the AI client makes its first real request, instead of a static wall of text.
+- **Multi-client naming clarity** — the nav now tags "Claude Setup" with a small "all clients" hint,
+  and the wizard's own header explains it also configures Codex/Gemini/other MCP clients and points
+  at Bridgistic Cloud for remote-only clients.
+- **`cloud/src/tenant-session.ts`** — `resolveTenantRegistry()`, extracted from `agent.ts`'s
+  `init()` purely so it's unit-testable (`agent.ts` imports `agents/mcp`, which pulls in
+  Cloudflare-Workers-only globals that make it unimportable under plain `node:test`). Same
+  behavior, same error messages.
+- **`cloud/test/oauth-flow.test.ts`** and **`cloud/test/tenant-session.test.ts`** — end-to-end
+  coverage for the full `/authorize` → `POST /authorize` → `/wp-callback` → tenant upserted in D1 →
+  `completeAuthorization()` handshake, and for tenantId → registry → registered, callable tools
+  (16 new tests; suite is now 93). Previously only pure/isolable pieces were tested (PKCE, crypto,
+  `cleanSiteUrl()`) — this is the first coverage of the actual request flow end to end.
+- **`scripts/check-cloud-tools-drift.js`** (`npm run check:cloud-drift`, wired into CI) — fails the
+  build if `cloud/src/tools/*.ts` and `mcp-server/src/tools/*.ts` (hand-synced copies, since the
+  Worker can't import from `mcp-server` directly) diverge, instead of relying on a maintainer to
+  remember to keep them in sync.
+- **Multi-Site page** (WP Admin) — a guided `connections.json` builder: pre-fills this site's alias/
+  URL/key, lets you add other sites' alias/URL/key ID/secret with a live JSON preview, and downloads
+  the finished file. Structural fields (not secrets) persist in the browser's `localStorage` between
+  visits. Replaces the fully-hand-edited-file-only workflow docs previously pointed to.
 
 ### Changed
 

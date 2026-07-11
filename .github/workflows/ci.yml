@@ -31,6 +31,9 @@ jobs:
       - name: Validate marketplace structure + secret scan
         run: npm run validate
 
+      - name: Check cloud/mcp-server tool files haven't drifted
+        run: npm run check:cloud-drift
+
       - name: Build distribution packages
         run: npm run package
 
