@@ -26,6 +26,7 @@ require_once __DIR__ . '/class-bridgistic-health-check.php';
 require_once __DIR__ . '/class-bridgistic-page.php';
 require_once __DIR__ . '/class-bridgistic-dashboard-page.php';
 require_once __DIR__ . '/class-bridgistic-claude-setup-page.php';
+require_once __DIR__ . '/class-bridgistic-cloud-page.php';
 require_once __DIR__ . '/class-bridgistic-keys-page.php';
 require_once __DIR__ . '/class-bridgistic-approvals-page.php';
 require_once __DIR__ . '/class-bridgistic-health-page.php';
@@ -51,6 +52,7 @@ final class Controller {
 		return array(
 			'bridgistic'           => array( __( 'Dashboard', 'bridgistic' ), DashboardPage::class ),
 			'bridgistic-setup'     => array( __( 'Claude Setup', 'bridgistic' ), ClaudeSetupPage::class ),
+			'bridgistic-cloud'     => array( __( 'Bridgistic Cloud', 'bridgistic' ), CloudPage::class ),
 			'bridgistic-keys'      => array( __( 'Keys & Scopes', 'bridgistic' ), KeysPage::class ),
 			'bridgistic-approvals' => array( __( 'Approvals', 'bridgistic' ), ApprovalsPage::class ),
 			'bridgistic-health'    => array( __( 'Health Check', 'bridgistic' ), HealthPage::class ),
@@ -65,8 +67,28 @@ final class Controller {
 
 	public function hooks(): void {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
+		add_action( 'admin_init', array( $this, 'maybe_redirect_after_activation' ) );
 		( new Assets() )->hooks();
 		( new Actions() )->hooks();
+	}
+
+	/**
+	 * First-run redirect to Claude Setup, set by Plugin::activate(). Skipped
+	 * for bulk activations (no single site to redirect to) and AJAX/REST
+	 * requests, same guard pattern most WP plugins use for this.
+	 */
+	public function maybe_redirect_after_activation(): void {
+		if ( ! get_transient( 'bridgistic_activation_redirect' ) ) {
+			return;
+		}
+		delete_transient( 'bridgistic_activation_redirect' );
+
+		if ( wp_doing_ajax() || isset( $_GET['activate-multi'] ) || ! current_user_can( self::CAP ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only bulk-activation check.
+			return;
+		}
+
+		wp_safe_redirect( admin_url( 'admin.php?page=bridgistic-setup' ) );
+		exit;
 	}
 
 	public function menu(): void {

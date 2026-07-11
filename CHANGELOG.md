@@ -27,8 +27,36 @@ Multi-client, multi-site setup, and cloud connector hardening.
   Worker via `wrangler deploy`, gated on `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` repo
   secrets (safe no-op until a repo admin adds them). Independent of `ci.yml`/`release.yml`.
 
+- **Per-IP rate limiting on the cloud Worker** (`cloud/src/rate-limit.ts`, wired in `index.ts`) —
+  120 req/min/IP on `/mcp`, 20 req/min/IP on the OAuth handshake routes, backed by a KV
+  fixed-window counter. Closes the "no rate limiting at the Worker level" gap tracked in
+  `docs/CLOUD_CONNECTOR.md`. 4 new tests (`cloud/test/rate-limit.test.ts`, suite now 77 tests).
+- **"Bridgistic Cloud" page** (WP Admin, tagged Beta in the nav) — the cloud connector's OAuth flow
+  was previously live in code but reachable only via a deep link initiated from the Worker; this
+  page makes it discoverable, shows the connector URL to paste into an AI client, and states its
+  beta/no-security-review-yet status plainly. The OAuth consent screen itself carries the same
+  warning directly on the Allow/Deny screen.
+- **First-activation redirect** — activating the plugin now sends the admin straight to Claude
+  Setup on their next page load (`Plugin::activate()` sets a short-lived transient,
+  `Admin\Controller::maybe_redirect_after_activation()` consumes it), skipped for bulk activations.
+- **Live "client connected" check in Claude Setup step 5** — previously "Run test" only confirmed
+  the server-side pipeline; step 5 now also polls (`bridgistic_poll_client_connected`) until the
+  AI client makes its first real request with the new key, and flips to a connected state
+  automatically instead of requiring a manual trip to the Logs page.
+- **Per-field copy buttons for the Desktop Extension panel** — Site URL, Key ID, and Secret each
+  get their own one-click copy button instead of one plain-text block to select from by hand.
+- **`docs/CONNECT_BRIDGISTIC.md`** — a single non-technical, step-by-step connect guide
+  (install → key → connect → verify → troubleshoot → FAQ) consolidating what was previously spread
+  across `INSTALL.md`, `WORDPRESS_SETUP.md`, `CLAUDE_DESKTOP.md`, `CONNECT_OTHER_AI.md`, and
+  `CLOUD_CONNECTOR.md`. Linked from the README.
+
 ### Changed
 
+- **Admin dashboard now defaults to light theme** (was dark-by-default); dark now requires an
+  explicit toggle or an OS dark preference. Same toggle, same tokens, direction inverted.
+- **The cloud connector is free, public beta** — `docs/FREE_VS_PAID.md`'s "Remote MCP connector"
+  row changed from "No" (free) to "Public beta"; the in-plugin Premium Features page no longer
+  lists it as an SaaS-exclusive locked feature.
 - `cloud/wrangler.toml` now has real Cloudflare resource IDs (D1 database, KV namespace) instead
   of placeholders — the Worker, database, and KV namespace were already provisioned outside of
   this repo's history; the committed config now matches the live deployment.
@@ -37,9 +65,11 @@ Multi-client, multi-site setup, and cloud connector hardening.
 
 ### Notes
 
-- The `mcp.wpistic.cloud` cloud connector remains a **private beta**: not linked from the Claude
-  Setup wizard, not announced. `docs/FREE_VS_PAID.md`'s free-vs-paid classification for the remote
-  connector is unchanged and still pending a decision — see `docs/CLOUD_CONNECTOR.md`.
+- The `mcp.wpistic.cloud` cloud connector is now a **public beta**, linked from WP Admin
+  (Bridgistic Cloud) and free to use. It has **not** had an independent third-party security
+  review yet — this is stated explicitly on the Bridgistic Cloud page and the OAuth consent screen
+  so users can make an informed call. See `docs/CLOUD_CONNECTOR.md` for full status and the
+  remaining checklist (end-to-end test against a live client, the security review).
 - Multi-site support (`BRIDGISTIC_CONNECTIONS`) is unchanged in behavior; it's now documented in
   one place (`docs/CONNECT_OTHER_AI.md`) instead of being scattered across per-client docs.
 

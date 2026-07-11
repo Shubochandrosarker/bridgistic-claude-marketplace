@@ -139,7 +139,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <section class="bridgistic-card bridgistic-locked-strip bridgistic-fade-in">
 	<?php echo Page::icon( 'lock', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 	<p>
-		<?php esc_html_e( 'Advanced AI Skills, remote connector, team permissions, and white-label options are part of Bridgistic SaaS.', 'bridgistic' ); ?>
+		<?php esc_html_e( 'Advanced AI Skills, a multi-site agency dashboard, team permissions, and white-label options are part of Bridgistic SaaS.', 'bridgistic' ); ?>
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=bridgistic-premium' ) ); ?>"><?php esc_html_e( 'See what\'s coming', 'bridgistic' ); ?></a>
 	</p>
 </section>

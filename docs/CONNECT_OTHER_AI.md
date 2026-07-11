@@ -51,7 +51,7 @@ so any MCP-capable client can use it, not just Claude. Per-client guides:
 | Claude Desktop / Claude Code | [CLAUDE_DESKTOP.md](CLAUDE_DESKTOP.md) / [CLAUDE_CODE.md](CLAUDE_CODE.md) | Yes — local |
 | OpenAI Codex CLI | [CODEX_SETUP.md](CODEX_SETUP.md) | Yes — local |
 | Gemini CLI | [GEMINI_SETUP.md](GEMINI_SETUP.md) | Yes — local |
-| ChatGPT | [CHATGPT_SETUP.md](CHATGPT_SETUP.md) | Private beta — remote only |
+| ChatGPT | [CHATGPT_SETUP.md](CHATGPT_SETUP.md) | Public beta — remote only |
 
 The Claude Setup wizard (WP Admin → Bridgistic → Claude Setup) generates ready-to-paste configs
 for Claude, Codex, and Gemini CLI directly — the "Manual MCP JSON" option there also works for any
@@ -59,7 +59,7 @@ other local MCP-compatible client not listed by name.
 
 **Why ChatGPT is different:** ChatGPT does not run a local server process the way Claude
 Desktop/Code, Codex, and Gemini CLI do — it only connects to a **remote** MCP server over HTTPS.
-Bridgistic's remote server (`mcp.wpistic.cloud`) exists and is deployed, but is currently a private
-beta, not yet linked from this wizard or generally announced. See
-[CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for status, and
-[CHATGPT_SETUP.md](CHATGPT_SETUP.md) for what the flow will look like once it opens up.
+Bridgistic's remote server (`mcp.wpistic.cloud`) is deployed and linked from WP Admin
+(**Bridgistic → Bridgistic Cloud**), free to use, but without an independent security review yet.
+See [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for status, and
+[CHATGPT_SETUP.md](CHATGPT_SETUP.md) for the flow.

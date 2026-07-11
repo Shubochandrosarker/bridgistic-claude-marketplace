@@ -1,6 +1,7 @@
 # Cloud connector status (`mcp.wpistic.cloud`)
 
-**Status: deployed, private beta. Not linked from the plugin UI, not publicly announced.**
+**Status: deployed, public beta. Linked from the plugin UI (WP Admin → Bridgistic Cloud) as of
+this page's last update. No independent security review yet — see the checklist below.**
 
 This page is the source of truth for where the hosted, multi-tenant MCP relay actually stands —
 `cloud/README.md` and `docs/ROADMAP.md` describe the design; this page tracks the live deployment.
@@ -11,14 +12,28 @@ This page is the source of truth for where the hosted, multi-tenant MCP relay ac
 - D1 database `bridgistic-cloud` exists, with the `tenants` table already migrated
   (`migrations/0001_init.sql` applied).
 - KV namespace `OAUTH_KV` exists (used by `@cloudflare/workers-oauth-provider` for its own
-  grant/token/client storage).
+  grant/token/client storage, and by the Worker's own rate limiter — see below).
 - `cloud/wrangler.toml` has the real resource IDs for both of the above — no more
   `REPLACE_WITH_REAL_*` placeholders.
 - A manual-dispatch CI workflow (`.github/workflows/deploy-cloud.yml`) can redeploy Worker code
   changes once a repo admin adds the `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` secrets
   (Settings → Secrets and variables → Actions). Until those secrets exist it's a safe no-op.
 - `cloud/` has an automated test suite (`cloud/test/`, run via `npm test`) covering the encryption,
-  PKCE, tenant registry, tenant storage, request signing, and WordPress OAuth client logic.
+  PKCE, tenant registry, tenant storage, request signing, rate limiting, and WordPress OAuth client
+  logic.
+- **Per-IP rate limiting** at the Worker level (`cloud/src/rate-limit.ts`), checked before a
+  request reaches the OAuth provider or the Durable Object: 120 req/min/IP on `/mcp`, 20
+  req/min/IP on the OAuth handshake routes (`/authorize`, `/wp-callback`, `/token`, `/register`).
+  It's a best-effort fixed-window limiter backed by `OAUTH_KV` (no atomic increment, so it can
+  slightly undercount races at a window boundary) — good enough to blunt a hammering token or a
+  scripted flood, not a precision quota system.
+- **Linked in WP Admin**: a "Bridgistic Cloud" nav item (tagged Beta) links to an informational
+  page explaining the connector, the fixed connector URL to paste into an AI client, and an
+  explicit no-security-review-yet warning. It doesn't perform the OAuth handshake itself — that's
+  still `Bridgistic\Oauth` + the consent screen at `admin.php?page=bridgistic-oauth-authorize`,
+  which also now carries the same beta warning directly on the Allow/Deny screen.
+- `docs/FREE_VS_PAID.md` and the in-plugin Premium Features page have been updated: the remote
+  connector is no longer listed as SaaS-exclusive.
 
 ## What still needs a human to confirm (not checkable from this environment)
 
@@ -48,31 +63,27 @@ API, only whether a binding exists:
    TLS/DNS failure means the route or zone isn't attached yet — check
    **Cloudflare dashboard → Workers & Pages → bridgistic-cloud → Settings → Domains & Routes**.
 
-## Before this goes from "private beta" to "linked in the wizard / publicly announced"
+## Before this goes from "public beta" to a fully vetted, generally-announced feature
 
-These are unchanged from `cloud/README.md`'s own pre-launch checklist, repeated here because this
-is the page a maintainer will actually check before flipping the switch:
+Two items from the original pre-launch checklist are done (rate limiting, and the free-vs-paid
+call — resolved as free/beta). What's left:
 
 1. A real end-to-end test: WordPress OAuth consent → tenant provisioned in D1 → a real MCP client
-   (Claude's remote connector is the easiest to test with today) successfully calls a tool.
-2. An independent security review of the OAuth relay and the D1 tenant store — this Worker holds a
-   live Bridgistic credential for every connected WordPress site.
-3. Load/abuse testing — there is currently **no rate limiting at the Worker level**. WordPress's
-   own per-key rate limit still applies once a request reaches it, but nothing stops one
-   compromised OAuth access token from hammering `/mcp` before that point.
-4. **The free-vs-paid decision.** `docs/FREE_VS_PAID.md` currently promises free-plugin users there
-   is no remote/cloud connector, and reserves it for a paid SaaS tier — a decision that hasn't been
-   made yet for this specific deployment. Nothing in this repo currently surfaces the cloud
-   connector to free-plugin users (the Claude Setup wizard doesn't link it, and `FREE_VS_PAID.md`
-   hasn't been changed), so there's no contradiction today — but publishing docs like
-   [CHATGPT_SETUP.md](CHATGPT_SETUP.md) more widely, or adding a wizard entry point, means deciding
-   this first.
+   (Claude's remote connector is the easiest to test with today) successfully calls a tool. Still
+   not done from this environment (network egress is blocked here) — a maintainer with real access
+   needs to run this once and record the result here.
+2. **An independent security review of the OAuth relay and the D1 tenant store** — this Worker
+   holds a live Bridgistic credential for every connected WordPress site. This is the biggest
+   remaining gap; the in-plugin UI (nav badge, both consent-adjacent warnings) says so explicitly
+   so users can make an informed call rather than assuming "linked in the dashboard" means
+   "audited."
+3. Load/abuse testing beyond the basic rate limiter above — confirm the limits chosen (120/min on
+   `/mcp`, 20/min on the handshake routes) hold up under real traffic patterns without either
+   blocking legitimate polling or leaving room for meaningful abuse.
 
-## Testing it yourself in the meantime
+## Trying it
 
-Nothing stops you from trying the connector today even while it's unlinked — the WordPress side
-(`Bridgistic\Oauth`, the hidden consent screen at `admin.php?page=bridgistic-oauth-authorize`) has
-been live since it was built. To try it with Claude's remote connector: Settings → Connectors →
-Add custom connector → `https://mcp.wpistic.cloud/mcp` → approve in your own WP admin when
-prompted. See [CHATGPT_SETUP.md](CHATGPT_SETUP.md) for what the same flow looks like once ChatGPT
-support is published.
+WP Admin → **Bridgistic Cloud** shows the connector URL and the same steps as below. To try it
+with Claude's remote connector directly: Settings → Connectors → Add custom connector →
+`https://mcp.wpistic.cloud/mcp` → approve in your own WP admin when prompted. See
+[CHATGPT_SETUP.md](CHATGPT_SETUP.md) for the ChatGPT-specific flow.

@@ -184,6 +184,18 @@
 }
 .bridgistic-nav-item.is-active:hover { color: var(--bz-accent-ink); }
 
+.bridgistic-nav-beta {
+	font-size: 9.5px;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	padding: 1px 5px;
+	border-radius: 5px;
+	background: var(--bz-warn);
+	color: #402c00;
+}
+.bridgistic-nav-item.is-active .bridgistic-nav-beta { background: var(--bz-accent-ink); color: var(--bz-accent); }
+
 /* ---- main / footer -------------------------------------------------------------- */
 
 .bridgistic-main { display: flex; flex-direction: column; gap: 18px; }
@@ -543,6 +555,10 @@
 
 .bridgistic-help { font-size: 12.5px; color: var(--bz-text-2); margin: 6px 0; }
 .bridgistic-help.is-muted { opacity: 0.85; }
+
+.bridgistic-check-block { padding: 14px 0; border-top: 1px solid var(--bz-border); }
+.bridgistic-check-block:first-of-type { border-top: none; padding-top: 0; }
+.bridgistic-check-block h3 { font-size: 13.5px; margin: 0 0 4px; color: var(--bz-text); }
 
 /* ---- tabs -------------------------------------------------------------------------------------------------- */
 

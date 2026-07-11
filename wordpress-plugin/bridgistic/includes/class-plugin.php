@@ -96,6 +96,11 @@ final class Plugin {
 			add_option( 'bridgistic_bridge_pepper', wp_generate_password( 64, true, true ), '', 'no' );
 		}
 
+		// Routes the admin straight to Claude Setup on their very next page
+		// load — otherwise nothing tells a first-time installer this menu
+		// exists. Consumed once by Admin\Controller::maybe_redirect_after_activation().
+		set_transient( 'bridgistic_activation_redirect', 1, MINUTE_IN_SECONDS );
+
 		flush_rewrite_rules();
 	}
 

@@ -57,6 +57,7 @@ final class Actions {
 		add_action( 'wp_ajax_bridgistic_revoke_key', array( $this, 'ajax_revoke_key' ) );
 		add_action( 'wp_ajax_bridgistic_get_config', array( $this, 'ajax_get_config' ) );
 		add_action( 'wp_ajax_bridgistic_test_connection', array( $this, 'ajax_test_connection' ) );
+		add_action( 'wp_ajax_bridgistic_poll_client_connected', array( $this, 'ajax_poll_client_connected' ) );
 		add_action( 'wp_ajax_bridgistic_run_health', array( $this, 'ajax_run_health' ) );
 		add_action( 'wp_ajax_bridgistic_create_snapshot', array( $this, 'ajax_create_snapshot' ) );
 		add_action( 'wp_ajax_bridgistic_restore_snapshot', array( $this, 'ajax_restore_snapshot' ) );
@@ -335,6 +336,10 @@ final class Actions {
 				'preset'     => $preset_id,
 				'label'      => $label,
 				'secretNote' => __( 'Shown once — copy it now. It is stored encrypted and cannot be displayed again.', 'bridgistic' ),
+				// Baseline for the step-5 "waiting for your AI client" poll —
+				// anything Claude does with this key after this instant counts
+				// as a real connection.
+				'connectSince' => current_time( 'mysql', true ),
 			),
 			$this->config_payload( $key_id, $secret )
 		);
@@ -346,12 +351,17 @@ final class Actions {
 	private function config_payload( string $key_id, ?string $secret ): array {
 		return array(
 			'configs' => array(
-				'desktop'   => ConfigGenerator::to_json( ConfigGenerator::desktop( $key_id, $secret ) ),
-				'code'      => ConfigGenerator::to_json( ConfigGenerator::code( $key_id, $secret ) ),
-				'cli'       => ConfigGenerator::code_cli( $key_id, $secret ),
-				'extension' => ConfigGenerator::extension_values( $key_id, $secret ),
-				'codex'     => ConfigGenerator::codex( $key_id, $secret ),
-				'gemini'    => ConfigGenerator::to_json( ConfigGenerator::gemini_cli( $key_id, $secret ) ),
+				'desktop'         => ConfigGenerator::to_json( ConfigGenerator::desktop( $key_id, $secret ) ),
+				'code'            => ConfigGenerator::to_json( ConfigGenerator::code( $key_id, $secret ) ),
+				'cli'             => ConfigGenerator::code_cli( $key_id, $secret ),
+				'extension'       => ConfigGenerator::extension_values( $key_id, $secret ),
+				'extensionFields' => array(
+					'siteUrl' => home_url(),
+					'keyId'   => $key_id,
+					'secret'  => $secret ?: ConfigGenerator::SECRET_PLACEHOLDER,
+				),
+				'codex'           => ConfigGenerator::codex( $key_id, $secret ),
+				'gemini'          => ConfigGenerator::to_json( ConfigGenerator::gemini_cli( $key_id, $secret ) ),
 			),
 		);
 	}
@@ -385,8 +395,38 @@ final class Actions {
 				'hmac'    => $hmac,
 				'score'   => $result['score'],
 				'message' => $ok
-					? __( 'Connection pipeline verified: REST reachable, signed request authenticated, scopes enforced.', 'bridgistic' )
+					? __( 'Server-side check passed: REST reachable, signed requests authenticate, scopes enforced. This does not yet confirm your AI client is configured — see below.', 'bridgistic' )
 					: __( 'The signed self-test did not pass. Open the Health Check page for details and fixes.', 'bridgistic' ),
+			)
+		);
+	}
+
+	/**
+	 * Claude Setup step 5: has the key created in this wizard session been
+	 * used since it was created? Polled from JS so the wizard can flip to
+	 * "connected" the moment the AI client makes its first real request,
+	 * instead of the user having to guess and go check the Logs page.
+	 */
+	public function ajax_poll_client_connected(): void {
+		$this->guard_ajax();
+
+		$key_id = isset( $_POST['key_id'] ) ? sanitize_text_field( wp_unslash( $_POST['key_id'] ) ) : '';
+		$since  = isset( $_POST['since'] ) ? sanitize_text_field( wp_unslash( $_POST['since'] ) ) : '';
+
+		$row = $key_id ? KeyStore::get( $key_id ) : null;
+		if ( ! $row ) {
+			wp_send_json_error( array( 'message' => __( 'Key not found.', 'bridgistic' ) ), 404 );
+		}
+
+		$last_used_at = (string) ( $row['last_used_at'] ?? '' );
+		$since_ts     = $since ? strtotime( $since . ' UTC' ) : false;
+		$last_used_ts = $last_used_at ? strtotime( $last_used_at . ' UTC' ) : false;
+		$connected    = $since_ts && $last_used_ts && $last_used_ts > $since_ts;
+
+		wp_send_json_success(
+			array(
+				'connected'  => (bool) $connected,
+				'lastUsedAt' => $last_used_at,
 			)
 		);
 	}

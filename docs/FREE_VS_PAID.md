@@ -1,11 +1,11 @@
 # Free vs Paid
 
-The free public version is focused on the **local Claude/WordPress connection**. Advanced skills, remote hosted connectors, multi-site team management, and SaaS automation belong to the paid/private version.
+The free public version centers on the **local Claude/WordPress connection**, plus a free public-beta hosted connector for remote-only clients. Advanced skills, multi-site team management, and SaaS automation belong to the paid/private version.
 
 That split is deliberate:
 
-- **Free plugin = the local secure bridge.** Complete, not crippled: full HMAC auth, all scopes, approvals, audit logs, snapshots, manual playbooks, guided setup, health diagnostics, export packages. It's everything an individual needs to connect Claude to their own site safely.
-- **Paid SaaS = skills, cloud connector, agencies, automation.** The layer on top for teams and businesses running many sites.
+- **Free plugin = the local secure bridge, plus a beta hosted relay.** Complete, not crippled: full HMAC auth, all scopes, approvals, audit logs, snapshots, manual playbooks, guided setup, health diagnostics, export packages, and (as of the public beta) a hosted connector for clients that can't run a local server. It's everything an individual needs to connect Claude to their own site safely.
+- **Paid SaaS = skills, agencies, automation.** The layer on top for teams and businesses running many sites.
 
 ## Feature comparison
 
@@ -21,11 +21,16 @@ That split is deliberate:
 | Scheduled playbooks | Limited | Full |
 | Skills marketplace | No | Yes |
 | SEO/AIO/Schema skills | No | Yes |
-| Remote MCP connector | No | Yes |
+| Remote MCP connector | Public beta¹ | Yes |
 | Multi-site agency dashboard | No | Yes |
 | Team permissions | No | Yes |
 | Usage billing | No | Yes |
 | White-label | No | Yes |
+
+¹ The hosted `mcp.wpistic.cloud` relay is free to use (WP Admin → Bridgistic Cloud) but is a
+public beta without an independent security review yet — see
+[CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md). The paid tier's version of this is the same connector
+plus the SaaS layer on top (multi-site management, team permissions, usage billing).
 
 ## What "Basic" and "Limited" mean concretely
 

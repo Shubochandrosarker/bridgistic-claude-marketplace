@@ -6,7 +6,7 @@
 
 *Signed requests · scoped keys · approvals on destructive ops · audit logs · snapshots · local MCP setup*
 
-*Also works with [Codex CLI](docs/CODEX_SETUP.md), [Gemini CLI](docs/GEMINI_SETUP.md), and [ChatGPT (private beta)](docs/CHATGPT_SETUP.md) — Bridgistic speaks standard MCP, not just Claude's.*
+*Also works with [Codex CLI](docs/CODEX_SETUP.md), [Gemini CLI](docs/GEMINI_SETUP.md), and [ChatGPT (public beta)](docs/CHATGPT_SETUP.md) — Bridgistic speaks standard MCP, not just Claude's.*
 
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL_v2%2B-blue.svg)](LICENSE)
 [![WordPress 6.4+](https://img.shields.io/badge/WordPress-6.4%2B-21759b.svg?logo=wordpress&logoColor=white)](https://wordpress.org/)
@@ -44,7 +44,7 @@ Bridgistic MCP server  ──  HMAC-signed HTTPS  ──▶  WordPress plugin
 
 ## What it does NOT include
 
-The free version is the complete local bridge. These belong to **Bridgistic SaaS** (separate, private product): AI skills marketplace (SEO/AIO/Schema audits), remote/cloud MCP connector, multi-site agency dashboard, team permissions, advanced logs & snapshots, usage billing, and white-label. See [docs/FREE_VS_PAID.md](docs/FREE_VS_PAID.md).
+The free version is the complete local bridge, plus a public-beta hosted connector (WP Admin → Bridgistic Cloud) for remote-only clients like ChatGPT. These belong to **Bridgistic SaaS** (separate, private product): AI skills marketplace (SEO/AIO/Schema audits), multi-site agency dashboard, team permissions, advanced logs & snapshots, usage billing, and white-label. See [docs/FREE_VS_PAID.md](docs/FREE_VS_PAID.md).
 
 ---
 
@@ -123,7 +123,7 @@ Restart Claude Desktop. Details: [docs/CLAUDE_DESKTOP.md](docs/CLAUDE_DESKTOP.md
 
 ### 3d. Or connect Codex, Gemini CLI, or ChatGPT
 
-The same **Bridgistic → Claude Setup** wizard (despite the name) also generates ready-to-paste configs for **OpenAI Codex CLI** and **Gemini CLI** — pick them as the connection type on step 1. See [docs/CODEX_SETUP.md](docs/CODEX_SETUP.md) and [docs/GEMINI_SETUP.md](docs/GEMINI_SETUP.md). ChatGPT only supports remote connectors and needs Bridgistic's hosted cloud connector, currently a private beta — see [docs/CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Managing more than one WordPress site from the same client (any of them)? See [docs/CONNECT_OTHER_AI.md](docs/CONNECT_OTHER_AI.md).
+The same **Bridgistic → Claude Setup** wizard (despite the name) also generates ready-to-paste configs for **OpenAI Codex CLI** and **Gemini CLI** — pick them as the connection type on step 1. See [docs/CODEX_SETUP.md](docs/CODEX_SETUP.md) and [docs/GEMINI_SETUP.md](docs/GEMINI_SETUP.md). ChatGPT only supports remote connectors and needs Bridgistic's hosted cloud connector — free, public beta, linked at **Bridgistic → Bridgistic Cloud** — see [docs/CHATGPT_SETUP.md](docs/CHATGPT_SETUP.md). Managing more than one WordPress site from the same client (any of them)? See [docs/CONNECT_OTHER_AI.md](docs/CONNECT_OTHER_AI.md).
 
 ### 4. Test the connection
 
@@ -180,7 +180,7 @@ Issues and PRs are welcome for the free version: bug fixes, docs, health checks,
 
 ## Free vs paid direction
 
-**Free = the local secure bridge** (this repo, complete and maintained). **Paid = Bridgistic SaaS**: skills, cloud connector, agencies, automation. Read [docs/FREE_VS_PAID.md](docs/FREE_VS_PAID.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+**Free = the local secure bridge, plus a public-beta hosted connector** (this repo, complete and maintained). **Paid = Bridgistic SaaS**: skills, agencies, automation. Read [docs/FREE_VS_PAID.md](docs/FREE_VS_PAID.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## License
 

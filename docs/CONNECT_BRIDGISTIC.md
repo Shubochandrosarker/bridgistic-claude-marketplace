@@ -13,21 +13,24 @@ config details.
 
 ---
 
-## Before you start: what's actually available right now
+## Before you start: two ways to connect
 
-Bridgistic has two ways to connect an AI assistant to your site. **Only one of them is available
-to you today** — the guide below is entirely about that one.
+Bridgistic has two ways to connect an AI assistant to your site.
 
 | | Local connection (this guide) | Cloud connector |
 |---|---|---|
-| Status | **Live, fully supported** | Private beta — not accessible from this plugin yet |
-| How it works | Your AI app runs a small server on your own computer that talks to your site | A hosted relay would broker the connection with no local install |
-| Setup effort | One key to create, one app to configure | Would be one click, once released |
-| Works with | Claude Desktop, Claude Code, Codex CLI, Gemini CLI | Would add ChatGPT and other remote-only clients |
+| Status | **Live, fully supported, most-used path** | **Live, public beta** — no independent security review yet |
+| How it works | Your AI app runs a small server on your own computer that talks to your site | A hosted relay (`mcp.wpistic.cloud`) brokers the connection with no local install |
+| Setup effort | One key to create, one app to configure | Paste one URL into your AI client, approve in WP Admin |
+| Works with | Claude Desktop, Claude Code, Codex CLI, Gemini CLI | ChatGPT and any other remote-only MCP client (also works with Claude's remote connector) |
 
-If you came here looking for a one-click "connect to the cloud" button in the dashboard — it
-doesn't exist yet on purpose (see [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for why). Use the local
-connection below; it takes about five minutes and is the fully supported path.
+**Use the local connection (below) if you're using Claude Desktop, Claude Code, Codex CLI, or
+Gemini CLI** — it's the most battle-tested path and never sends your credentials anywhere but
+between your own computer and your own site. **Use the cloud connector
+(WP Admin → Bridgistic → Bridgistic Cloud) only if your client can't run a local server** (ChatGPT
+is the main case) — it's functional but hasn't had an independent security review yet, so avoid it
+for sites you can't afford to risk, and prefer a Read-only or Content Manager preset over Developer
+Mode when you do use it. See [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for its full status.
 
 ---
 
@@ -170,6 +173,7 @@ client.
 
 **Can I use this on more than one site?** Yes, see [CONNECT_OTHER_AI.md](CONNECT_OTHER_AI.md).
 
-**Why can't I just paste one cloud URL like some other tools?** That flow exists in the code
-already but hasn't passed a security review or been publicly released yet — see
-[CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) if you're curious about its current state.
+**Can I just paste one cloud URL like some other tools?** Yes — that's
+**WP Admin → Bridgistic → Bridgistic Cloud**. It's live and free, but hasn't had an independent
+security review yet, so the local connection above is still the recommended default for most
+people. See [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for its current state.

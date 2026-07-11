@@ -8,20 +8,24 @@ secrets.
 
 ## Status
 
-**Deployed as a private beta — not linked from the plugin UI, not publicly
-announced.** See [`docs/CLOUD_CONNECTOR.md`](../docs/CLOUD_CONNECTOR.md) for
-exactly what's live, what a maintainer still needs to confirm by hand
-(secret, DNS route), and the checklist before this goes from "private beta"
-to generally available. Summary of what's left, in order:
+**Deployed as a public beta — linked from the plugin UI (WP Admin →
+Bridgistic Cloud), free to use.** See
+[`docs/CLOUD_CONNECTOR.md`](../docs/CLOUD_CONNECTOR.md) for exactly what's
+live, what a maintainer still needs to confirm by hand (secret, DNS route),
+and the checklist before this is fully vetted and generally announced.
+Summary of what's left, in order:
 
 1. A real deployment (see below) tested end-to-end against a real WordPress
    site and a real MCP client (Claude Desktop's "Add custom connector", or
    equivalent).
 2. An independent security review of the OAuth relay and the D1 tenant store
    — this Worker holds a live Bridgistic key for every connected site. See
-   "Security notes" below for what that review should focus on.
-3. Load/abuse testing (rate limits per tenant, KV/D1 quota behavior under
-   many concurrent connections).
+   "Security notes" below for what that review should focus on. This is the
+   biggest remaining gap — the in-plugin UI says so explicitly wherever a
+   user can reach this connector.
+3. Further load/abuse testing beyond the basic per-IP rate limiter shipped
+   in `src/rate-limit.ts` (KV/D1 quota behavior under many concurrent
+   connections).
 
 ## Architecture
 
@@ -119,10 +123,14 @@ local tunnel URL works for this since Cloudflare exposes it over HTTPS.
 - **Every WordPress-issued key is scoped to whatever preset the admin picked
   on the consent screen** — same `Presets`/`Scopes` enforcement as every
   other Bridgistic key, nothing new to audit there.
-- **Rate limiting and abuse protection do not exist yet** at the Worker
-  level (WordPress's own per-key rate limit still applies once a request
-  reaches it, but nothing stops one compromised OAuth access token from
-  hammering this Worker's `/mcp` endpoint). Add this before any public,
-  unauthenticated-signup rollout.
+- **Basic per-IP rate limiting exists** (`src/rate-limit.ts`, wired in
+  `src/index.ts`): 120 req/min/IP on `/mcp`, 20 req/min/IP on the OAuth
+  handshake routes, backed by a KV fixed-window counter (best-effort, not
+  atomic — can slightly undercount races at a window boundary). WordPress's
+  own per-key rate limit still applies once a request reaches it. This
+  blunts a hammering token or a scripted flood; it is not a precision quota
+  system, and per-tenant (rather than per-IP) limiting inside the Durable
+  Object is still a possible future hardening step if per-IP limiting proves
+  insufficient under real traffic.
 
 [oauth-provider]: https://github.com/cloudflare/workers-oauth-provider
