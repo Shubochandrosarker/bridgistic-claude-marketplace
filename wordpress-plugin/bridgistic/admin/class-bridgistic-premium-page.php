@@ -37,12 +37,6 @@ final class PremiumPage extends Page {
 					),
 				),
 				array(
-					'icon'        => 'globe',
-					'label'       => __( 'Remote MCP Connector', 'bridgistic' ),
-					'description' => __( 'Claude web/app connector through Bridgistic Cloud — no local server needed.', 'bridgistic' ),
-					'items'       => array(),
-				),
-				array(
 					'icon'        => 'dashboard',
 					'label'       => __( 'Multi-Site Agency Dashboard', 'bridgistic' ),
 					'description' => __( 'Manage many client websites from one dashboard.', 'bridgistic' ),

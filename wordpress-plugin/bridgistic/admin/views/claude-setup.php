@@ -193,7 +193,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div>
 			<div data-config-panel="extension" hidden>
 				<p class="bridgistic-help">
-					<?php esc_html_e( 'One-click setup: download the extension, double-click it (Claude Desktop opens), then paste these three values when prompted. The secret is stored securely by Claude Desktop.', 'bridgistic' ); ?>
+					<?php esc_html_e( 'One-click setup: download the extension, double-click it (Claude Desktop opens), then copy-paste these three values when prompted, one at a time. The secret is stored securely by Claude Desktop.', 'bridgistic' ); ?>
 				</p>
 				<div class="bridgistic-step-actions" style="margin-top:0">
 					<a class="bridgistic-button is-primary" href="https://github.com/Shubochandrosarker/bridgistic-claude-marketplace/releases/latest/download/bridgistic.mcpb" target="_blank" rel="noopener noreferrer">
@@ -201,7 +201,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php esc_html_e( 'Download bridgistic.mcpb', 'bridgistic' ); ?>
 					</a>
 				</div>
-				<pre class="bridgistic-code" id="bridgistic-config-extension"></pre>
+				<div class="bridgistic-secret-grid">
+					<div class="bridgistic-secret-row">
+						<label><?php esc_html_e( 'Site URL', 'bridgistic' ); ?></label>
+						<code id="bridgistic-ext-site-url"></code>
+						<button type="button" class="bridgistic-button is-soft is-small" data-copy-target="bridgistic-ext-site-url"><?php echo Page::icon( 'copy', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php esc_html_e( 'Copy', 'bridgistic' ); ?></button>
+					</div>
+					<div class="bridgistic-secret-row">
+						<label><?php esc_html_e( 'Key ID', 'bridgistic' ); ?></label>
+						<code id="bridgistic-ext-key-id"></code>
+						<button type="button" class="bridgistic-button is-soft is-small" data-copy-target="bridgistic-ext-key-id"><?php echo Page::icon( 'copy', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php esc_html_e( 'Copy', 'bridgistic' ); ?></button>
+					</div>
+					<div class="bridgistic-secret-row is-secret">
+						<label><?php esc_html_e( 'Secret', 'bridgistic' ); ?></label>
+						<code id="bridgistic-ext-secret" class="bridgistic-secret-value"></code>
+						<button type="button" class="bridgistic-button is-soft is-small" data-copy-target="bridgistic-ext-secret"><?php echo Page::icon( 'copy', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php esc_html_e( 'Copy', 'bridgistic' ); ?></button>
+					</div>
+				</div>
 			</div>
 			<div data-config-panel="code" hidden>
 				<p class="bridgistic-help"><?php esc_html_e( 'Easiest path — install from the plugin marketplace inside Claude Code:', 'bridgistic' ); ?></p>
@@ -259,16 +275,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</header>
 		<div class="bridgistic-step-body">
 			<p class="bridgistic-help">
-				<?php esc_html_e( 'This runs a signed request through the full pipeline on the server (REST → HMAC → scopes) — the same path Claude uses. It verifies the site side; the final check is asking Claude to run bridgistic_get_site_info.', 'bridgistic' ); ?>
+				<?php esc_html_e( 'Two separate checks confirm you\'re actually connected — a server check you run here, and a client check this page detects automatically.', 'bridgistic' ); ?>
 			</p>
+
+			<div class="bridgistic-check-block">
+				<h3><?php esc_html_e( '1. Server check', 'bridgistic' ); ?></h3>
+				<p class="bridgistic-help"><?php esc_html_e( 'Runs a signed request through the full pipeline on the server (REST → HMAC → scopes). This confirms WordPress itself is reachable and configured correctly — it does not yet confirm your AI client is set up right.', 'bridgistic' ); ?></p>
+				<div class="bridgistic-step-actions">
+					<button type="button" class="bridgistic-button is-primary" id="bridgistic-test-connection">
+						<?php echo Page::icon( 'pulse', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Run test', 'bridgistic' ); ?>
+					</button>
+				</div>
+				<div id="bridgistic-test-result" class="bridgistic-test-result" hidden></div>
+			</div>
+
+			<div class="bridgistic-check-block">
+				<h3><?php esc_html_e( '2. Client check', 'bridgistic' ); ?></h3>
+				<p class="bridgistic-help"><?php esc_html_e( 'In your AI client (the one you configured in Step 4), ask it to run bridgistic_get_site_info. This page checks automatically and updates the moment a real request arrives — no need to refresh or go check Logs yourself.', 'bridgistic' ); ?></p>
+				<div id="bridgistic-client-status" class="bridgistic-test-result"></div>
+			</div>
+
 			<div class="bridgistic-step-actions">
 				<button type="button" class="bridgistic-button is-ghost" data-step-back="4"><?php esc_html_e( 'Back', 'bridgistic' ); ?></button>
-				<button type="button" class="bridgistic-button is-primary" id="bridgistic-test-connection">
-					<?php echo Page::icon( 'pulse', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<?php esc_html_e( 'Run test', 'bridgistic' ); ?>
-				</button>
 			</div>
-			<div id="bridgistic-test-result" class="bridgistic-test-result" hidden></div>
 			<div class="bridgistic-callout is-info" style="margin-top:14px">
 				<?php echo Page::icon( 'info', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<p>

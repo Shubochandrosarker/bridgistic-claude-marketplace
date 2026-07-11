@@ -187,6 +187,7 @@
 			preset: 'read_only',
 			configs: null,
 			keyId: null,
+			connectSince: null,
 		};
 
 		var goToStep = function ( step ) {
@@ -199,6 +200,11 @@
 			var active = $( '[data-step-panel="' + step + '"]', setup );
 			if ( active && active.scrollIntoView ) {
 				active.scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
+			}
+			if ( 5 === step ) {
+				startClientPoll();
+			} else {
+				stopClientPoll();
 			}
 		};
 
@@ -263,6 +269,7 @@
 					.then( function ( data ) {
 						state.keyId = data.keyId;
 						state.configs = data.configs;
+						state.connectSince = data.connectSince;
 						$( '#bridgistic-new-key-id' ).textContent = data.keyId;
 						$( '#bridgistic-new-key-secret' ).textContent = data.secret;
 						$( '#bridgistic-key-result' ).hidden = false;
@@ -283,12 +290,24 @@
 			if ( ! state.configs ) {
 				return;
 			}
-			[ 'desktop', 'code', 'cli', 'extension', 'codex', 'gemini' ].forEach( function ( key ) {
+			[ 'desktop', 'code', 'cli', 'codex', 'gemini' ].forEach( function ( key ) {
 				var node = $( '#bridgistic-config-' + key );
 				if ( node && state.configs[ key ] ) {
 					node.textContent = state.configs[ key ];
 				}
 			} );
+			var ext = state.configs.extensionFields;
+			if ( ext ) {
+				if ( $( '#bridgistic-ext-site-url' ) ) {
+					$( '#bridgistic-ext-site-url' ).textContent = ext.siteUrl;
+				}
+				if ( $( '#bridgistic-ext-key-id' ) ) {
+					$( '#bridgistic-ext-key-id' ).textContent = ext.keyId;
+				}
+				if ( $( '#bridgistic-ext-secret' ) ) {
+					$( '#bridgistic-ext-secret' ).textContent = ext.secret;
+				}
+			}
 		};
 
 		var showConfigTab = function ( name ) {
@@ -297,6 +316,17 @@
 			} );
 			$$( '[data-config-panel]', setup ).forEach( function ( panel ) {
 				panel.hidden = panel.getAttribute( 'data-config-panel' ) !== name;
+			} );
+			// The extension panel has its own per-field copy buttons and its
+			// own download-the-extension action; the generic JSON copy/download
+			// footer buttons below don't apply to it (there's no single JSON
+			// blob to copy for a three-field paste-in prompt).
+			var isExtension = 'extension' === name;
+			[ '#bridgistic-copy-config', '#bridgistic-download-config' ].forEach( function ( sel ) {
+				var btn = $( sel );
+				if ( btn ) {
+					btn.hidden = isExtension;
+				}
 			} );
 		};
 
@@ -380,6 +410,93 @@
 					} );
 			} );
 		}
+
+		// Step 5: client check — poll until the AI client makes its first real
+		// request with this key, instead of making the user guess and go check
+		// the Logs page themselves.
+		var clientPollTimer = null;
+		var clientPollCount = 0;
+		var CLIENT_POLL_MAX = 40; // ~2.5 minutes at 4s intervals, then wait for manual "Check now".
+
+		var renderClientStatus = function ( html ) {
+			var out = $( '#bridgistic-client-status' );
+			if ( out ) {
+				out.innerHTML = html;
+			}
+		};
+
+		var renderWaiting = function () {
+			renderClientStatus(
+				'<div class="bridgistic-callout is-info"><p>' +
+					( i18n.clientWaiting || "Waiting for your AI client's first request…" ) +
+					'</p></div>'
+			);
+		};
+
+		var renderConnected = function () {
+			renderClientStatus(
+				'<div class="bridgistic-callout is-success"><p>' +
+					( i18n.clientConnected || 'Connected — a real request just came in from your AI client.' ) +
+					'</p></div>'
+			);
+		};
+
+		var renderStillWaiting = function () {
+			renderClientStatus(
+				'<div class="bridgistic-callout is-info"><p>' +
+					( i18n.clientStillWaiting || "Still waiting. That's normal if you haven't asked your AI assistant to do anything yet." ) +
+					'</p><button type="button" class="bridgistic-button is-soft is-small" id="bridgistic-client-recheck">' +
+					( i18n.checkNow || 'Check now' ) +
+					'</button></div>'
+			);
+			var recheck = $( '#bridgistic-client-recheck' );
+			if ( recheck ) {
+				recheck.addEventListener( 'click', function () {
+					clientPollCount = 0;
+					renderWaiting();
+					pollClientOnce();
+				} );
+			}
+		};
+
+		var pollClientOnce = function () {
+			if ( ! state.keyId || ! state.connectSince ) {
+				return;
+			}
+			post( 'bridgistic_poll_client_connected', { key_id: state.keyId, since: state.connectSince } )
+				.then( function ( data ) {
+					if ( data.connected ) {
+						renderConnected();
+						stopClientPoll();
+						return;
+					}
+					clientPollCount++;
+					if ( clientPollCount >= CLIENT_POLL_MAX ) {
+						stopClientPoll();
+						renderStillWaiting();
+					}
+				} )
+				.catch( function () {
+					// Transient network errors shouldn't stop the wizard; just try again next tick.
+				} );
+		};
+
+		var startClientPoll = function () {
+			if ( clientPollTimer || ! state.keyId ) {
+				return;
+			}
+			clientPollCount = 0;
+			renderWaiting();
+			pollClientOnce();
+			clientPollTimer = window.setInterval( pollClientOnce, 4000 );
+		};
+
+		var stopClientPoll = function () {
+			if ( clientPollTimer ) {
+				window.clearInterval( clientPollTimer );
+				clientPollTimer = null;
+			}
+		};
 
 		syncConfigTabs();
 	}

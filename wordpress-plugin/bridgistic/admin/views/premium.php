@@ -25,6 +25,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<p><?php esc_html_e( 'These features are part of Bridgistic SaaS and are not included in the free local MCP version. Nothing on this page collects payment or unlocks anything.', 'bridgistic' ); ?></p>
 </div>
 
+<div class="bridgistic-callout is-warning bridgistic-fade-in">
+	<?php echo Page::icon( 'warn', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+	<p>
+		<?php
+		printf(
+			/* translators: %s: link to the Bridgistic Cloud page. */
+			esc_html__( 'The remote MCP connector is no longer SaaS-exclusive — it\'s free, but in public beta with no independent security review yet. See %s.', 'bridgistic' ),
+			'<a href="' . esc_url( admin_url( 'admin.php?page=bridgistic-cloud' ) ) . '">' . esc_html__( 'Bridgistic Cloud', 'bridgistic' ) . '</a>'
+		); // phpcs:ignore WordPress.Security.EscapeOutput
+		?>
+	</p>
+</div>
+
 <section class="bridgistic-grid is-3 bridgistic-stagger">
 	<?php foreach ( $data['sections'] as $section ) : ?>
 		<article class="bridgistic-card bridgistic-locked-card is-tall">

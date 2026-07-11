@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $bridgistic_nav_icons = array(
 	'bridgistic'           => 'dashboard',
 	'bridgistic-setup'     => 'bolt',
+	'bridgistic-cloud'     => 'globe',
 	'bridgistic-keys'      => 'key',
 	'bridgistic-approvals' => 'shield',
 	'bridgistic-health'    => 'pulse',
@@ -63,6 +64,9 @@ $bridgistic_nav_icons = array(
 				>
 					<?php echo Page::icon( $bridgistic_nav_icons[ $nav_slug ] ?? 'dashboard', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<span><?php echo esc_html( $nav_page[0] ); ?></span>
+					<?php if ( 'bridgistic-cloud' === $nav_slug ) : ?>
+						<span class="bridgistic-nav-beta"><?php esc_html_e( 'Beta', 'bridgistic' ); ?></span>
+					<?php endif; ?>
 				</a>
 			<?php endforeach; ?>
 		</nav>

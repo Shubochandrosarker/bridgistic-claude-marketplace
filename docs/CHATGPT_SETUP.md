@@ -1,14 +1,13 @@
-# ChatGPT setup (private beta)
+# ChatGPT setup (public beta)
 
-**Status: not yet generally available.** ChatGPT only connects to **remote** MCP servers over
+**Status: live, public beta.** ChatGPT only connects to **remote** MCP servers over
 HTTPS — unlike Claude, Codex, and Gemini CLI, it cannot launch a local server process, so it can
 only reach Bridgistic through the hosted cloud connector (`mcp.wpistic.cloud`). That connector is
-deployed but is currently a **private beta**, not yet linked from the Claude Setup wizard or
-generally announced — see [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for exactly what "deployed but
-private" means and how to get access. This page documents the flow so it's ready to publish the
-moment the connector opens up.
+deployed and linked from WP Admin (**Bridgistic → Bridgistic Cloud**), but it has not yet had an
+independent third-party security review — see [CLOUD_CONNECTOR.md](CLOUD_CONNECTOR.md) for exactly
+what "public beta" means here before connecting a site you can't afford to risk.
 
-## What the flow will look like
+## What the flow looks like
 
 ChatGPT calls this **Developer Mode** (Settings → Connectors → Advanced → enable Developer Mode →
 "Create," then paste a server URL). It requires a **paid ChatGPT plan** (Plus, Pro, Team, Business,
@@ -36,8 +35,8 @@ clients.
 Bridgistic's cloud connector implements OAuth 2.1 with PKCE (S256) and RFC 7591 dynamic client
 registration via `@cloudflare/workers-oauth-provider`, with no pre-shared client secret — ChatGPT's
 Developer Mode supports DCR for custom connectors (a static client ID/secret is optional, not
-required), so this should work without changes. Before this page goes from "beta" to published,
-confirm against a real ChatGPT Developer Mode connection:
+required), so this should work without changes. Not yet confirmed against a real ChatGPT Developer
+Mode connection — if you try this and hit a snag, please open an issue, and check these first:
 
 - The `401 + WWW-Authenticate` → `/.well-known/oauth-protected-resource` (RFC 9728) discovery chain
   resolves correctly.
