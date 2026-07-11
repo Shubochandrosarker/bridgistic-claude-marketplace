@@ -118,8 +118,8 @@
 		themeToggle.addEventListener( 'click', function () {
 			var root = document.documentElement;
 			var current = root.getAttribute( 'data-bridgistic-theme' );
-			var osLight = window.matchMedia && window.matchMedia( '(prefers-color-scheme: light)' ).matches;
-			var effective = current || ( osLight ? 'light' : 'dark' );
+			var osDark = window.matchMedia && window.matchMedia( '(prefers-color-scheme: dark)' ).matches;
+			var effective = current || ( osDark ? 'dark' : 'light' );
 			var next = effective === 'light' ? 'dark' : 'light';
 			root.setAttribute( 'data-bridgistic-theme', next );
 			try {
