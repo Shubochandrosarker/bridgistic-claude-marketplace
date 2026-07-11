@@ -28,6 +28,7 @@ require_once __DIR__ . '/class-bridgistic-dashboard-page.php';
 require_once __DIR__ . '/class-bridgistic-claude-setup-page.php';
 require_once __DIR__ . '/class-bridgistic-cloud-page.php';
 require_once __DIR__ . '/class-bridgistic-keys-page.php';
+require_once __DIR__ . '/class-bridgistic-multisite-page.php';
 require_once __DIR__ . '/class-bridgistic-approvals-page.php';
 require_once __DIR__ . '/class-bridgistic-health-page.php';
 require_once __DIR__ . '/class-bridgistic-logs-page.php';
@@ -54,6 +55,7 @@ final class Controller {
 			'bridgistic-setup'     => array( __( 'Claude Setup', 'bridgistic' ), ClaudeSetupPage::class ),
 			'bridgistic-cloud'     => array( __( 'Bridgistic Cloud', 'bridgistic' ), CloudPage::class ),
 			'bridgistic-keys'      => array( __( 'Keys & Scopes', 'bridgistic' ), KeysPage::class ),
+			'bridgistic-multisite' => array( __( 'Multi-Site', 'bridgistic' ), MultiSitePage::class ),
 			'bridgistic-approvals' => array( __( 'Approvals', 'bridgistic' ), ApprovalsPage::class ),
 			'bridgistic-health'    => array( __( 'Health Check', 'bridgistic' ), HealthPage::class ),
 			'bridgistic-logs'      => array( __( 'Logs', 'bridgistic' ), LogsPage::class ),

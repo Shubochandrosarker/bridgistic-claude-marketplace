@@ -19,6 +19,19 @@ What's planned for this repository. SaaS plans live elsewhere; this roadmap only
 - **Release automation** — one tag push builds, tests, validates, creates the GitHub release with all assets, publishes npm + registry
 - CI on every PR: build, tests, marketplace validation + secret scan, PHP lint
 
+## Shipped (unreleased — see CHANGELOG.md's [Unreleased] section for the full list)
+
+- **Bridgistic Cloud page** (WP Admin, tagged Beta) — the previously code-only, undiscoverable cloud OAuth connector now has a real entry point, with an explicit no-security-review-yet warning shown both there and on the OAuth consent screen
+- **Worker-level rate limiting** for the cloud connector (`cloud/src/rate-limit.ts`) — 120 req/min/IP on `/mcp`, 20 req/min/IP on the OAuth handshake routes
+- **Multi-Site page** — a guided `connections.json` builder in WP Admin (pre-fills this site, add other sites' alias/URL/key ID/secret, live JSON preview, copy/download), replacing the previously fully hand-edited file workflow
+- **Live dashboard connection status** — polls every 15s and toasts when a request actually lands, instead of a value computed once at page load
+- **Categorized AJAX error messages** — a WAF/firewall/proxy blocking a request (common on managed hosts) now says so instead of surfacing a raw JSON-parse error
+- **Claude Setup step 5 split into "server check" / "client check"**, the latter polling until the AI client's first real request lands
+- **First-activation redirect** to Claude Setup
+- **End-to-end test coverage for the cloud connector's OAuth handshake** (`/authorize` → `/wp-callback` → tenant upserted → tools registered) and a CI check that `cloud/src/tools/*.ts` hasn't drifted from `mcp-server/src/tools/*.ts`
+- Per-field copy buttons on the Desktop Extension config panel
+- Admin dashboard now defaults to light theme; OAuth consent screen re-themed to match
+
 ## Next (1.2)
 
 - Submission to Anthropic's Claude Desktop extension directory (in-app browsing) — needs a published privacy policy (`docs/PRIVACY.md`, done) plus the interest-form submission itself
@@ -69,8 +82,6 @@ self-serve targets.
 - Independent security review of the cloud connector's OAuth relay and D1
   tenant store (see `docs/CLOUD_CONNECTOR.md`) — the last item blocking it
   from moving past public beta
-- A WP-admin UI for building/editing a multi-site `connections.json` (today
-  it's a hand-edited file — see `docs/CONNECT_OTHER_AI.md`)
 
 ## Explicit non-goals for this repo
 

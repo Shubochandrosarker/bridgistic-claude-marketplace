@@ -25,6 +25,7 @@ $bridgistic_nav_icons = array(
 	'bridgistic-setup'     => 'bolt',
 	'bridgistic-cloud'     => 'globe',
 	'bridgistic-keys'      => 'key',
+	'bridgistic-multisite' => 'users',
 	'bridgistic-approvals' => 'shield',
 	'bridgistic-health'    => 'pulse',
 	'bridgistic-logs'      => 'list',
@@ -63,7 +64,12 @@ $bridgistic_nav_icons = array(
 					<?php echo $nav_slug === $this->slug() ? 'aria-current="page"' : ''; ?>
 				>
 					<?php echo Page::icon( $bridgistic_nav_icons[ $nav_slug ] ?? 'dashboard', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<span><?php echo esc_html( $nav_page[0] ); ?></span>
+					<span>
+						<?php echo esc_html( $nav_page[0] ); ?>
+						<?php if ( 'bridgistic-setup' === $nav_slug ) : ?>
+							<span class="bridgistic-nav-hint"><?php esc_html_e( 'all clients', 'bridgistic' ); ?></span>
+						<?php endif; ?>
+					</span>
 					<?php if ( 'bridgistic-cloud' === $nav_slug ) : ?>
 						<span class="bridgistic-nav-beta"><?php esc_html_e( 'Beta', 'bridgistic' ); ?></span>
 					<?php endif; ?>

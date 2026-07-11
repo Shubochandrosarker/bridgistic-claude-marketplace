@@ -7,6 +7,7 @@
   "scripts": {
     "build": "npm --prefix mcp-server install && npm --prefix mcp-server run build && npm --prefix mcp-server run bundle",
     "validate": "node scripts/validate-marketplace.js",
+    "check:cloud-drift": "node scripts/check-cloud-tools-drift.js",
     "package": "node scripts/build-package.js",
     "desktop:package": "node scripts/create-desktop-package.js",
     "test": "npm --prefix mcp-server test"

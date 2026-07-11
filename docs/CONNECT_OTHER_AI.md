@@ -25,6 +25,14 @@ vars, pointing at a JSON registry file:
 }
 ```
 
+**Easiest path:** WP Admin → **Bridgistic → Multi-Site** is a guided builder for this exact file —
+it pre-fills the site you're on, lets you add other sites' alias/URL/key ID/secret one at a time,
+shows a live JSON preview, and downloads the finished file. Nothing is sent to this site's server;
+alias/URL/key ID are remembered in your browser between visits (not the secrets — paste those
+again each time).
+
+To build it by hand instead:
+
 1. Run the **Claude Setup** wizard (WP Admin → Bridgistic → Claude Setup) once per site to mint a
    key for each, then copy each site's key ID/secret into a shared `connections.json` like the one
    above. A starter template with your current site pre-filled is included in every

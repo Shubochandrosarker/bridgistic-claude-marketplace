@@ -171,7 +171,7 @@ never sends it anywhere else.
 **Keys & Scopes** and click **Rotate** to generate a fresh secret, then re-paste it into your AI
 client.
 
-**Can I use this on more than one site?** Yes, see [CONNECT_OTHER_AI.md](CONNECT_OTHER_AI.md).
+**Can I use this on more than one site?** Yes — **WP Admin → Bridgistic → Multi-Site** is a guided builder for the config file this needs. See [CONNECT_OTHER_AI.md](CONNECT_OTHER_AI.md) for details.
 
 **Can I just paste one cloud URL like some other tools?** Yes — that's
 **WP Admin → Bridgistic → Bridgistic Cloud**. It's live and free, but hasn't had an independent

@@ -196,6 +196,15 @@
 }
 .bridgistic-nav-item.is-active .bridgistic-nav-beta { background: var(--bz-accent-ink); color: var(--bz-accent); }
 
+.bridgistic-nav-hint {
+	display: block;
+	font-size: 9.5px;
+	font-weight: 400;
+	text-transform: none;
+	opacity: 0.65;
+	margin-top: 1px;
+}
+
 /* ---- main / footer -------------------------------------------------------------- */
 
 .bridgistic-main { display: flex; flex-direction: column; gap: 18px; }
@@ -535,6 +544,24 @@
 .bridgistic-secret-row label { font-size: 12px; font-weight: 600; color: var(--bz-text-2); }
 .bridgistic-secret-row code { overflow-wrap: anywhere; padding: 7px 10px; }
 .bridgistic-secret-row.is-secret code { border: 1px dashed rgba(251, 191, 36, 0.5); }
+
+/* ---- multi-site connections builder ---------------------------------------------------------------------- */
+
+.bridgistic-ms-row {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr) auto;
+	align-items: end;
+	gap: 10px;
+	padding: 10px 0;
+	border-bottom: 1px solid var(--bz-border);
+}
+.bridgistic-ms-row:last-child { border-bottom: none; }
+.bridgistic-ms-row .bridgistic-input { width: 100%; }
+.bridgistic-ms-row [data-ms-remove] { align-self: center; }
+
+@media (max-width: 720px) {
+	.bridgistic-ms-row { grid-template-columns: 1fr; }
+}
 
 /* ---- code blocks ---------------------------------------------------------------------------------------- */
 

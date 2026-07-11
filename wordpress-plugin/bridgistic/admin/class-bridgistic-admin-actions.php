@@ -58,6 +58,7 @@ final class Actions {
 		add_action( 'wp_ajax_bridgistic_get_config', array( $this, 'ajax_get_config' ) );
 		add_action( 'wp_ajax_bridgistic_test_connection', array( $this, 'ajax_test_connection' ) );
 		add_action( 'wp_ajax_bridgistic_poll_client_connected', array( $this, 'ajax_poll_client_connected' ) );
+		add_action( 'wp_ajax_bridgistic_dashboard_status', array( $this, 'ajax_dashboard_status' ) );
 		add_action( 'wp_ajax_bridgistic_run_health', array( $this, 'ajax_run_health' ) );
 		add_action( 'wp_ajax_bridgistic_create_snapshot', array( $this, 'ajax_create_snapshot' ) );
 		add_action( 'wp_ajax_bridgistic_restore_snapshot', array( $this, 'ajax_restore_snapshot' ) );
@@ -427,6 +428,52 @@ final class Actions {
 			array(
 				'connected'  => (bool) $connected,
 				'lastUsedAt' => $last_used_at,
+			)
+		);
+	}
+
+	/**
+	 * Dashboard: live connection status, polled from JS so "Connected" and
+	 * the activity counters update the moment a request actually lands,
+	 * instead of only refreshing on a full page reload (previously this was
+	 * a value computed once at render time — see docblock on
+	 * DashboardPage::live_stats(), which this reuses so both places agree).
+	 */
+	public function ajax_dashboard_status(): void {
+		$this->guard_ajax();
+
+		$stats = DashboardPage::live_stats();
+
+		$status_label = __( 'Not connected', 'bridgistic' );
+		$status_kind  = 'muted';
+		$status_note  = __( 'Start with Set Up Claude — it takes about two minutes.', 'bridgistic' );
+		if ( $stats['connected'] ) {
+			$status_label = __( 'Connected', 'bridgistic' );
+			$status_kind  = 'pass';
+			/* translators: %s: human-readable time since the last request. */
+			$status_note = sprintf( __( 'Last MCP request %s', 'bridgistic' ), Page::ago( $stats['last_used'] ) );
+		} elseif ( $stats['keys_enabled'] > 0 ) {
+			$status_label = __( 'Waiting for first request', 'bridgistic' );
+			$status_kind  = 'warn';
+			$status_note  = __( 'Keys exist — connect Claude and run a read-only tool.', 'bridgistic' );
+		}
+
+		$latest_log_text = '';
+		if ( $stats['latest_log'] ) {
+			/* translators: 1: action name, 2: human-readable time since. */
+			$latest_log_text = sprintf( __( 'Latest: %1$s (%2$s)', 'bridgistic' ), (string) $stats['latest_log']['action'], Page::ago( (string) $stats['latest_log']['created_at'] ) );
+		}
+
+		wp_send_json_success(
+			array(
+				'connected'     => (bool) $stats['connected'],
+				'statusLabel'   => $status_label,
+				'statusKind'    => $status_kind,
+				'statusNote'    => $status_note,
+				'keysEnabled'   => (int) $stats['keys_enabled'],
+				'keysTotal'     => (int) $stats['keys_total'],
+				'auditCount'    => number_format_i18n( (int) $stats['audit_count'] ),
+				'latestLogText' => $latest_log_text,
 			)
 		);
 	}
